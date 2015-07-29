@@ -1,8 +1,4 @@
-# This style is an homage to Michal Migurski's High Road demo:
-# https://github.com/migurski/HighRoad
-# It uses stops to set line and outline widths at various zoom levels,
-# and the sort_key property to arrange bridges, overpasses, and tunnels
-# by depth.
+# Author: Geraldine Sarmiento
 #
 
 sources:
