@@ -1,0 +1,266 @@
+# Author: Geraldine Sarmiento
+
+sources:
+    # osm:
+    #     type: TopoJSONTiles
+    #     url: //tilestache-dev2-us-east-ext-1189213459.us-east-1.elb.amazonaws.com/osm/all/{z}/{x}/{y}.topojson
+
+    osm:
+        type: TopoJSONTiles
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-HqUVidw
+
+camera:
+    type: perspective
+    axis: [0, .1] # very small building extrusion
+
+lights:
+    light1:
+        type: point
+        direction: [1, 1, -.5]
+        diffuse: .5
+        ambient: .85
+
+styles:
+    flatlines:
+        base: lines
+        lighting: false # ignore lights
+    flatpolys:
+        base: polygons
+        lighting: false # ignore lights
+
+    dots:
+        mix: tools
+        # blend: overlay # reminder: try inlay later
+        base: polygons
+        texcoords: true
+        shaders:
+            blocks:
+                global: |
+                    vec2 tile(vec2 _st, float _zoom){
+                      _st *= _zoom;
+                      return fract(_st);
+                    }
+                    
+                    vec2 brickTile(vec2 _st, float _zoom){
+                        _st *= _zoom;
+                        if (fract(_st.y * 0.5) > 0.5){
+                            _st.x += 0.5;
+                        }
+                        return fract(_st);
+                    }
+                    
+                    float circle(vec2 _st, float _radius){
+                      vec2 pos = vec2(0.5)-_st;
+                      return smoothstep(1.0-_radius,1.0-_radius+_radius*0.2,1.-dot(pos,pos)*3.14);
+                    }
+                color: |
+                    vec2 st = TileCoords();
+                    st = brickTile(st,70.0);
+                    float dot_value = circle(st,0.4); // how strong is the dot: 1 = full dot, 0 = no dot
+
+                    //color = vec4(1.0,1.0,1.0,1.0)*vec4(dot_value);
+                    //color *= vec4(dot_value);
+
+                    // manually blend between dot and grain 
+                    //vec4 dot_color = color * vec4(dot_value);
+                    //color.rgb =
+                    //    dot_color.rgb * dot_color.a +
+                    //    (color.rgb - grain(gl_FragCoord.xy)*0.7) * (1. - dot_color.a);
+                    //color.rgb = mix(color.rgb - grain(gl_FragCoord.xy)*0.7, dot_color.rgb, dot_color.a);
+
+                    // use mix() to blend between dot and grain
+                    vec3 grain_color = color.rgb - grain(gl_FragCoord.xy)*0.7;
+                    color.rgb = mix(grain_color, vec3(1.), dot_value);
+
+                    //if (color.a < .5) {
+                        //discard;
+                        //color.rgb = vec3(1., 0., 0.);
+                        //color.rgb = v_color - (1. - color.a) * grain(gl_FragCoord.xy)*0.7;
+                        //color.rgba = v_color - grain(gl_FragCoord.xy)*0.7;
+                    //}
+
+    tools:
+        base: polygons
+        shaders:
+            blocks:
+                global: |
+                    // GridTile
+                    //=============================
+                    varying vec3 v_pos;
+                    vec2 TileCoords(){return fract(v_pos.xy*0.0002445);}
+                    bool grid(vec2 st, float res, float press){
+                        vec2 grid = fract(st*res);
+                        return grid.x < res*press || grid.y < res*press;
+                    }
+                    float TileGrid(float res){
+                        vec2 st = TileCoords()*100.*res;
+                        float pct = 0.0;
+                        float press = 0.4+(1.0-fract(u_map_position.z))*0.1;
+                        if (grid(st,0.01,press)) pct += 0.5;
+                        if (grid(st,0.1,press)) pct += 0.1;
+                        return pct;
+                    }
+                    float TileGrid(){ return mix(TileGrid(1.),TileGrid(2.),fract(u_map_position.z)); }
+                    // Grain
+                    //=============================
+                    float random(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
+                    float noise(vec2 x) {
+                        vec2 i = floor(x);
+                        vec2 f = fract(x);
+                        float a = random(i);
+                        float b = random(i + vec2(1.0, 0.0));
+                        float c = random(i + vec2(0.0, 1.0));
+                        float d = random(i + vec2(1.0, 1.0));
+                        vec2 u = f * f * (3.0 - 2.0 * f);
+                        return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+                    }
+                    float fbm( in vec2 p ){
+                        float s = 0.0;
+                        float m = 0.0;
+                        float a = 0.5;
+                        for(int i=0; i<2; i++ ){
+                            s += a * noise(p);
+                            m += a;
+                            a *= 0.5;
+                            p *= 2.0;
+                        }
+                        return s/m;
+                    }
+                    float grain(vec2 pos){
+                        vec2 st = pos/u_resolution.xy-vec2(.7);
+                        return dot(st,st)+(fbm(pos*0.6)*0.1);
+                    }
+                position: |
+                    // GridTile
+                    v_pos = a_position.xyz * 32767.;
+    grid:
+        base: polygons
+        mix: tools
+        shaders:
+            blocks:
+                filter: |
+                    //color.rgb = vec3(1., 0., 0.); // overwrite color and make it red
+                    //color.g = 0.5; // change just green channel
+                    //color.rgb *= .5; // darken everything by 50%
+                    //color.rgb = vec3(abs(sin(gl_FragCoord.x / u_resolution.x * 6.28)), 0., 0.); // red channel sine wave, gradient
+
+                    color.rgb += vec3(.2) * TileGrid(); // grid lines lighten
+                    //color.rgb += vec3(0.5, 0.5, 1.) * TileGrid(); // purple-ish grid lines
+                    color.rgb -= grain(gl_FragCoord.xy)*0.4;
+                    //color.r -= grain(gl_FragCoord.xy)*0.5; // only apply grain to red channel
+
+    grid2:
+        base: polygons
+        mix: tools
+        shaders:
+            blocks:
+                filter: |
+                    //color.rgb += vec3(.05) * TileGrid(); // grid lines lighten
+                    color.rgb -= grain(gl_FragCoord.xy)*0.7;
+
+    road_grain:
+        base: lines
+        mix: tools
+        shaders:
+            blocks:
+                filter:
+                    color.rgb -= grain(gl_FragCoord.xy)*0.9;
+
+scene:
+    background:
+        color: [1.0,1.0,1.0]
+
+layers:
+    earth:
+        data: { source: osm, layer: earth }
+        draw:
+            lines:
+                order: 4
+                width: 1px
+                color: '#ffffff'
+            grid2:
+                order: 0
+                color: [1.0,1.0,1.0]
+
+    water:
+        data: { source: osm, layer: water }
+        draw:
+            grid:
+                order: 1
+                color: [0.8,0.8,0.8]
+                # color: red
+                # color: purple
+
+    # ne-roads:
+    #     data: {source: osm, layer: roads }
+    #     filter: { $zoom: { max: 8 } }
+    #     draw:
+    #         lines:
+    #             order: 2
+    #             width: 0.5px
+    #             color: [0, 0, 0]
+
+    landuse:
+        data: { source: osm }
+        park:
+            filter:
+                kind: park
+            draw:
+                dots:
+                    order: 2
+                    color: white
+
+
+    osm-roads:
+        data: { source: osm, layer: roads }
+        filter: { not: { highway: service, kind: rail }, $zoom: { min: 8 } }
+
+        highway:
+            filter: { kind: highway }
+            draw:
+                flatlines:
+                    # put highways on top of all other roads
+                    order: 8
+                    color: [0,0,0]
+                    width: [[7, 0.25px], [9, 0.75px], [11, 1px], [14, 2px], [15, 3px]]
+                    # outline:
+                    #     color: [0.180,0.278,0.600]
+                    #     width: [[7, 1px], [9, 1.5px], [11, 2px], [14, 3.5px]]
+
+            link:
+                filter: { is_link: yes } # on- and off-ramps, etc
+                draw:
+                    flatlines:
+                        color: [0,0,0]
+                        width: [[12, 0.5px],[14, 1px]]
+                        # outline:
+                        #     color: [0.180,0.278,0.600]
+                        #     width: [[12, 1px],[14, 4px]]
+        major_road:
+            filter: { kind: major_road }
+            draw:
+                road_grain:
+                    order: 7
+                    color: [[10, [0.8,0.8,0.8]], [12, [0.6,0.6,0.6]]]
+                    width: [[10, 0.5px], [14, 2px]]
+                    # outline:
+                    #     color: [[10, [0.180,0.278,0.600]],[15, [0.161,0.247,0.506]]]
+                    #     width: 5px
+
+        # minor_road:
+        #     filter: { kind: minor_road, not: { highway: service } }
+        #     draw:
+        #         flatlines:
+        #             order: 6
+        #             color: [0,0,0]
+        #             width: [[12, 0.1px], [13, 0.1px], [15, 1px]]
+
+    # buildings are the only layer that gets lighting
+    # buildings:
+    #     data: { source: osm, layer: buildings }
+    #     draw:
+    #         polygons:
+    #             order: 9
+    #             color: [.3, .3, .3]
+    #             # under z15, only extrude buildings taller than 20m
+    #             extrude: function () { return ( $zoom >= 16) || ($zoom >= 15 && feature.height > 20) }
