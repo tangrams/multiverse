@@ -1,0 +1,118 @@
+﻿cameras:
+    camera1:
+        type: isometric
+lights:
+    directional1:
+        type: directional
+        direction: [.3, .9, -.9]
+        diffuse: .9
+        ambient: .7
+scene:
+    background:
+        color: [0.,0.5,0.8]
+        
+styles:
+    flatlines:
+        base: lines
+        lighting: false # ignore lights
+        
+    buildings:
+        base: polygons
+        shaders:
+            blocks:
+                color: |
+                    color.rgb *= vec3(1.0,1.0,1.0)*(min((v_world_position.z*.001 + 0.99),1.));
+    tools:
+        texcoords: true
+        shaders:
+            blocks:
+                global: |
+                    // GridTile
+                    //=============================
+                    varying vec3 v_pos;
+                    vec2 TileCoords(){return fract(v_pos.xy*0.0002445);}
+                    // Random
+                    //=============================
+                    float random(float x){ return fract(sin(x)*43758.5453);}
+                    float random(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
+                    //  Grid
+                    //=============================
+                    float grid(vec2 st, float res){
+                        vec2 grid = fract(st*res);
+                        return 1.0-(step(0.005*res,grid.x) * step(0.005*res,grid.y));
+                    }
+                position: |
+                    // GridTile
+                    v_pos = a_position.xyz * 32767.;
+    random_lines:
+        base: polygons
+        mix: tools
+        animated: false
+        shaders:
+            blocks:
+                global: |
+                    float randomSerie(float x, float freq, float t) {
+                        return step(.5,random( floor(x*freq)-floor(t) ));
+                    }
+                color: |
+                    vec2 st = v_texcoord.xy;
+                    float freq = random(random(floor(u_tile_origin.xy*.001)));
+                    float t = 60.+u_time*(1.0-freq)*50.;
+                    freq += random(floor(st.x));
+                    color.rgb = vec3(0.067,0.294,0.682)*(randomSerie(st.y, freq*700., 0.0));
+                    color.b = 0.972;
+                    //color.g = 0.2;
+                    color.rgb *= .674;
+sources:
+    osm:
+        type: TopoJSONTiles
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?
+layers:
+    earth:
+        data: { source: osm }
+        draw:
+            polygons:
+                order: 0
+                color: [0.,0.5,0.8]
+    water:
+        data: { source: osm }
+        draw:
+            random_lines:
+                order: 5
+                color: [0.000,0.329,0.639]
+                width: 8
+                
+    buildings:
+        data: { source: osm }
+        filter: { $zoom: { min: 10 } }
+        draw:
+            polygons:
+                order: 5
+                color: [0.320,0.615,1.000]
+            outline:
+                style: lines
+                order: 5
+                color: [1.0,1.0,1.0]
+                width: 1px
+                extrude: true
+                tile_edges: true
+
+        extruded:
+            filter: { $zoom: { min: 15 } }
+            draw:
+                polygons:
+                    style: buildings
+                    extrude: function () { return feature.height > 0 || $zoom >= 16; }
+                    
+    osm-roads:
+        data: { source: osm, layer: roads }
+        filter: { not: { highway: service, kind: rail }, $zoom: { min: 6 } }
+
+        highway:
+            filter: { kind: highway }
+            draw:
+                flatlines:
+                    # put highways on top of all other roads
+                    order: 8
+                    color: [0.000,0.470,0.830]
+                    width: [[7, 0.25px], [9, 2px], [11, 2.5px], [14, 2px], [15, 3px]]

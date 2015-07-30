@@ -1,0 +1,137 @@
+cameras:
+    perspective:
+        type: flat
+        
+styles:
+    tools:
+        base: polygons
+        shaders:
+            blocks:
+                global: |
+                    // GridTile
+                    //=============================
+                    varying vec3 v_pos;
+                    vec2 TileCoords(){return fract(v_pos.xy*0.0002445);}
+                    bool grid(vec2 st, float res, float press){
+                        vec2 grid = fract(st*res);
+                        return grid.x < res*press || grid.y < res*press;
+                    }
+                    float TileGrid(float res){
+                        vec2 st = TileCoords()*100.*res;
+                        float pct = 0.0;
+                        float press = 0.4+(1.0-fract(u_map_position.z))*0.2;
+                        if (grid(st,0.01,press)) pct += 0.5;
+                        if (grid(st,0.1,press)) pct += 0.1;
+                        return pct;
+                    }
+                    float TileGrid(){ return mix(TileGrid(1.),TileGrid(2.),fract(u_map_position.z)); }
+                    // Grain
+                    //=============================
+                    float random(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
+                    float noise(vec2 x) {
+                        vec2 i = floor(x);
+                        vec2 f = fract(x);
+                        float a = random(i);
+                        float b = random(i + vec2(1.0, 0.0));
+                        float c = random(i + vec2(0.0, 1.0));
+                        float d = random(i + vec2(1.0, 1.0));
+                        vec2 u = f * f * (3.0 - 2.0 * f);
+                        return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+                    }
+                    float fbm( in vec2 p ){
+                        float s = 0.0;
+                        float m = 0.0;
+                        float a = 0.5;
+                        for(int i=0; i<2; i++ ){
+                            s += a * noise(p);
+                            m += a;
+                            a *= 0.5;
+                            p *= 2.0;
+                        }
+                        return s/m;
+                    }
+                    float grain(vec2 pos){
+                        vec2 st = pos/u_resolution.xy-vec2(.5);
+                        return dot(st,st)+(fbm(pos*0.6)*0.1);
+                    }
+                    // Stripes
+                    //=============================
+                    mat2 rotate2d(float angle){
+                        return mat2(cos(angle),-sin(angle),
+                                    sin(angle),cos(angle));
+                    }
+                    float stripes(vec2 st){
+                        st = rotate2d(3.14159265358*-0.25 )*st;
+                        //return step(.9,1.0-smoothstep(.5,1.,abs(sin(st.x*3.14159265358))));
+                        return step(.75,1.0-smoothstep(.75,1.,abs(sin(st.x*3.14159265358)))); // more spaced out stripes?
+                    }
+                position: |
+                    // GridTile
+                    v_pos = a_position.xyz * 32767.;
+    color1:
+        base: polygons
+        shaders:
+            blocks:
+                filter: |
+                    // mix white and green on both axes
+                    color.rgb = mix(vec3(0.9), vec3(0.7), gl_FragCoord.x / u_resolution.x + gl_FragCoord.y / u_resolution.y); 
+
+
+    ground:
+        base: polygons
+        mix: tools
+        shaders:
+            blocks:
+                filter: |
+                    color.rgb -= grain(gl_FragCoord.xy)*0.7;
+
+    coast:
+        base: lines
+        mix: tools
+        lighting: false
+        blend: overlay
+        shaders:
+            blocks:
+                color: |
+                    const float pixel_scale = 695.;
+                    float meter_pixels = u_meters_per_pixel / u_device_pixel_ratio;
+                    vec2 st = gl_FragCoord.xy/pixel_scale;
+                    const float dot_wrap = 1000.;
+                    st += mod(u_map_position.xy / meter_pixels, dot_wrap)/pixel_scale;
+                    
+                    //color = mix(color,vec4(0.),stripes(st*100.))*.8;
+                    //color = mix(color,vec4(color.rgb, 0.5),stripes(st*20.))*.8; // stripe from full to transparent
+                    color = mix(vec4(color.rgb, 0.9), vec4(0.), stripes(st*130.))*.8; // transparent stripes
+                    //color = mix(color,vec4(1., 0., 0., 1.),stripes(st*100.))*.8;
+                    
+                    color.rgb -= grain(gl_FragCoord.xy)*0.5;
+                filter: |
+                    color.rgb += vec3(.2)*TileGrid();
+                    color.rgb -= grain(gl_FragCoord.xy)*0.3;
+sources:
+    osm:
+        type: TopoJSONTiles
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson
+layers:
+    earth:
+        data: { source: osm }
+        draw:
+            coast:
+                order: 4
+                width: 6px
+                color: '#cccccc'
+            ground:
+                order: 0
+                color: [1.0,1.0,1.0]
+    water:
+        data: { source: osm }
+        draw:
+            color1:
+                order: 1
+                color: [0.8,0.8,0.8]
+    # landuse:
+    #     data: { source: osm }
+    #     draw:
+    #         polygons:
+    #             order: 1
+    #             color: [0.988,0.251,0.933]
