@@ -1,0 +1,280 @@
+# Geraldine Sarmiento
+# Basemap color gradient sketch 6 with dots and mixed colored dots
+
+cameras:
+    perspective:
+        type: flat
+        
+styles:
+    flatlines:
+        base: lines
+        lighting: false # ignore lights
+
+    tools:
+        base: polygons
+        shaders:
+            blocks:
+                global: |
+                    vec2 tile(vec2 _st, float _zoom){
+                      _st *= _zoom;
+                      return fract(_st);
+                    }
+                    
+                    vec2 brickTile(vec2 _st, float _zoom){
+                        _st *= _zoom;
+                        if (fract(_st.y * 0.5) > 0.5){
+                            _st.x += 0.5;
+                        }
+                        return fract(_st);
+                    }
+                    
+                    float circle(vec2 _st, float _radius){
+                      vec2 pos = vec2(0.5)-_st;
+                      return smoothstep(1.0-_radius,1.0-_radius+_radius*0.2,1.-dot(pos,pos)*3.14);
+                    }
+
+                    // GridTile
+                    //=============================
+                    varying vec3 v_pos;
+                    vec2 TileCoords(){return fract(v_pos.xy*0.0002445);}
+                    bool grid(vec2 st, float res, float press){
+                        vec2 grid = fract(st*res);
+                        return grid.x < res*press || grid.y < res*press;
+                    }
+                    float TileGrid(float res){
+                        vec2 st = TileCoords()*100.*res;
+                        float pct = 0.0;
+                        float press = 0.4+(1.0-fract(u_map_position.z))*0.2;
+                        if (grid(st,0.01,press)) pct += 0.5;
+                        if (grid(st,0.1,press)) pct += 0.1;
+                        return pct;
+                    }
+                    float TileGrid(){ return mix(TileGrid(1.),TileGrid(2.),fract(u_map_position.z)); }
+                    // Grain
+                    //=============================
+                    float random(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
+
+                    float random(in vec3 _st){ 
+                        return fract(sin(dot(_st.xyz,
+                            vec3(12.9898,78.233,32.4355)))* 
+                            43758.5453123);
+                    }
+
+                    float noise(vec2 x) {
+                        vec2 i = floor(x);
+                        vec2 f = fract(x);
+                        float a = random(i);
+                        float b = random(i + vec2(1.0, 0.0));
+                        float c = random(i + vec2(0.0, 1.0));
+                        float d = random(i + vec2(1.0, 1.0));
+                        vec2 u = f * f * (3.0 - 2.0 * f);
+                        return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+                    }
+                    float fbm( in vec2 p ){
+                        float s = 0.0;
+                        float m = 0.0;
+                        float a = 0.5;
+                        for(int i=0; i<2; i++ ){
+                            s += a * noise(p);
+                            m += a;
+                            a *= 0.5;
+                            p *= 2.0;
+                        }
+                        return s/m;
+                    }
+                    float grain(vec2 pos){
+                        vec2 st = pos/u_resolution.xy-vec2(.5);
+                        return dot(st,st)+(fbm(pos*0.6)*0.1);
+                    }
+                    // Stripes
+                    //=============================
+                    mat2 rotate2d(float angle){
+                        return mat2(cos(angle),-sin(angle),
+                                    sin(angle),cos(angle));
+                    }
+                    float stripes(vec2 st){
+                        st = rotate2d(3.14159265358*-0.25 )*st;
+                        //return step(.9,1.0-smoothstep(.5,1.,abs(sin(st.x*3.14159265358))));
+                        return step(.75,1.0-smoothstep(.75,1.,abs(sin(st.x*3.14159265358)))); // more spaced out stripes?
+                    }
+                position: |
+                    // GridTile
+                    v_pos = a_position.xyz * 32767.;
+    gradient1:
+        mix: tools
+        base: polygons
+        shaders:
+            blocks:
+                filter: |
+                    // GRADIENTS!
+                    
+                    // mix greenturquoise and blue with X coordinate
+                    color.rgb = mix(vec3(0.406,1.000,0.926), vec3(0.000,0.512,0.930), gl_FragCoord.x / u_resolution.x); 
+                    color.rgb -= grain(gl_FragCoord.xy)*0.3;
+                    color.rgb += TileGrid()*0.3;
+
+
+    gradient2:
+        mix: tools
+        base: polygons
+        shaders:
+            blocks:
+                filter: |
+                    // mix gray and bluegray with X coordinate
+                    color.rgb = mix(vec3(0.666,0.665,0.665), vec3(0.217,0.483,0.700), gl_FragCoord.x / u_resolution.x);
+                    color.rgb -= grain(gl_FragCoord.xy)*0.4;
+
+    gradient3:
+        mix: tools
+        base: polygons
+        shaders:
+            blocks:
+                filter: |
+                    color.rgb = mix(vec3(0.666,0.665,0.665), vec3(0.003,0.473,0.546), gl_FragCoord.x / u_resolution.x);
+                    color.rgb -= grain(gl_FragCoord.xy)*0.85;
+
+    dots:
+        mix: tools
+        blend: overlay
+        base: polygons
+        texcoords: true
+        shaders:
+            blocks:
+                color: |
+                    vec2 st = TileCoords();
+                    st = brickTile(st,60.0);
+                    float dot_size = .2;
+                    float b = circle(st, dot_size);
+                    //color = vec4(0.460,0.460,0.460,1.0)*vec4(b);
+                    color *= vec4(b);
+
+    random_dots:
+        mix: tools
+        base: polygons
+        blend: overlay
+        shaders:
+            blocks:
+                color: |
+                    vec2 st = TileCoords();
+                    st = brickTile(st,80.0);
+                    float dot_size = .6;
+                    float intensity = circle(st, dot_size);
+
+                    //intensity = max(intensity, .5); // limit background to 50%
+                    color *= vec4(intensity);
+
+                    // mosaic
+                    vec3 pos = vec3(TileCoords()*100.0,1.0);
+                    //mix 2 colors
+                    color.rgb *= mix(vec3(0.345,0.847,0.784), vec3(0.217,0.483,0.700), random(abs(floor(pos))));
+                    //color.rgb *= random(abs(floor(pos)));
+
+                    //float min_random = .3;
+                    //float max_random = 1.;
+                    //color.rgb *= clamp(random(abs(floor(pos))), min_random, max_random);
+                    //color.rgb *= mix(min_random, max_random, random(abs(floor(pos))));
+
+    pattern:
+        mix: tools
+        base: polygons
+        animated: false
+        material:
+            ambient: 1.0
+            diffuse: 1.0
+        shaders:
+            blocks:
+                global: |
+                    vec3 hsb2rgb( in float hue, in float sat, in float bri ){
+                        vec3 rgb = clamp(abs(mod(hue*6.0+vec3(0.0,4.0,2.0),
+                                                6.0)-3.0)-1.0, 
+                                                0.0, 
+                                                1.0 );
+                        rgb = rgb*rgb*(3.0-2.0*rgb);
+                        return bri * mix(vec3(1.0), rgb, sat);
+                    }
+                filter: |
+                    vec3 pos = vec3(TileCoords()*100.0,1.0);
+                    //mix 2 colors
+                    color.rgb = mix(vec3(0.666,0.665,0.665), vec3(0.217,0.483,0.700), random(abs(floor(pos))));
+                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+
+sources:
+    osm:
+        type: TopoJSONTiles
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson??api_key=vector-tiles-x4i7gmA
+layers:
+    earth:
+        data: { source: osm }
+        draw:
+            lines:
+                order: 4
+                width: 1px
+                color: '#48B4C0'
+            gradient2:
+                order: 0
+                # color: [0.4,0.4,0.4]
+    water:
+        data: { source: osm }
+        draw:
+            gradient1:
+                order: 1
+                # color: [0.159,0.159,0.159]
+    landuse:
+        data: { source: osm }
+        park:
+            filter:
+                kind: park
+            draw:
+                dots:
+                # 3d-dots:
+                # 3d-dots-animated:
+                    order: 5
+                    color: [0.345,0.847,0.784]
+
+        forest:
+            filter:
+                kind: forest
+            draw:
+                random_dots:
+                    order: 5
+                    # color: white
+
+    osm-roads:
+        data: { source: osm, layer: roads }
+        filter: { not: { highway: service, kind: rail }, $zoom: { min: 8 } }
+
+        highway:
+            filter: { kind: highway }
+            draw:
+                flatlines:
+                    # put highways on top of all other roads
+                    order: 8
+                    color: [1.000,1.000,1.000]
+                    width: [[7, 0.5px], [9, 1.25px], [11, 1.5px], [13, 2px], [14, 3px], [15, 4px]]
+                    # outline:
+                    #     color: [0.180,0.278,0.600]
+                    #     width: [[7, 1px], [9, 1.5px], [11, 2px], [14, 3.5px]]
+
+            link:
+                filter: { is_link: yes } # on- and off-ramps, etc
+                draw:
+                    flatlines:
+                        color: [1,1,1]
+                        width: [[12, 0.5px],[14, 1px]]
+                        # outline:
+                        #     color: [0.180,0.278,0.600]
+                        #     width: [[12, 1px],[14, 4px]]
+        major_road:
+            filter: { kind: major_road }
+            draw:
+                flatlines:
+                    order: 7
+                    color: [[10, [.7,.7,.7]], [13, [.7,.7,.7]], [13, [.7,.7,.7]]]
+                    width: [[10, 0.2px], [11, 0.35px], [14, 2px], [15, 3px]]
+        # minor_road:
+        #     filter: { kind: minor_road, not: { highway: service } }
+        #     draw:
+        #         flatlines:
+        #             order: 6
+        #             color: [[15, [1, 1, 1]], [17, [1,1,1]]]
+        #             width: [[13, 0.2px], [14, 0.4px], [15, 1px], [16, 2px]]
