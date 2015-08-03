@@ -120,13 +120,6 @@ styles:
                     float b = circle(st,0.1);
                     color *= vec4(b);
 
-    buildings:
-        base: polygons
-        shaders:
-            blocks:
-                color: |
-                    color.rgb *= vec3(min((v_world_position.z*.001 + .5),1.));
-
 sources:
     osm:
         type: TopoJSONTiles
@@ -164,18 +157,27 @@ layers:
                 color: [0.320,0.615,1.000]
             outline:
                 style: lines
-                order: 10
+                order: 11
                 color: [0.0,0.0,0.0]
-                width: [[12, 0.25px], [13, 0.5px], [13, 0.75px], [14, 1px]]
+                width: [[12, 0.25px], [13, 0.5px], [14, 1px]]
                 extrude: true
-                tile_edges: true
 
         extruded:
             filter: { $zoom: { min: 14 } }
             draw:
                 polygons:
-                    style: buildings
-                    extrude: function () { return feature.height > 0 || $zoom >= 16; }
+                    extrude: function () { return feature.height > 50 || $zoom >= 16; }
+
+            # in zoom 14-15, render buildings as 2d dot patterns
+            outlines:
+                filter: { $zoom: { max: 16 }, height: { max: 50 } }
+                draw:
+                    polygons:
+                        style: dots
+                    outline:
+                        visible: false
+                        # extrude: false
+                        # width: .5px
 
     osm-roads:
         data: { source: osm, layer: roads }
