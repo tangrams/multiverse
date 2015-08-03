@@ -106,12 +106,13 @@ styles:
         shaders:
             blocks:
                 filter: |
-                    // GRADIENTS!
+                    vec2 st = (TileCoords()+vec2(.4))*1000.; 
+                    color.rgb = mix(vec3(0.184,0.184,0.184), vec3(0.0,0.0,0.0), gl_FragCoord.x / u_resolution.x);
+                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
                     
-                    // mix greenturquoise and blue with X coordinate
-                    color.rgb = mix(vec3(0.406,1.000,0.926), vec3(0.000,0.512,0.930), gl_FragCoord.x / u_resolution.x); 
-                    color.rgb -= grain(gl_FragCoord.xy)*0.3;
-                    color.rgb += TileGrid()*0.3;
+                    color.rgb = mix(color.rgb, vec3(0.067, 0.706, 1.), TileGrid());
+                    float g = grain(st);
+                    color.rgb = mix(color.rgb, vec3(.067,.706,1.),pow(g,1.4));
 
 
     gradient2:
