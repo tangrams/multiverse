@@ -111,8 +111,8 @@ styles:
                     color.rgb -= grain(gl_FragCoord.xy)*0.1;
                     
                     color.rgb = mix(color.rgb, vec3(0.067, 0.706, 1.), TileGrid());
-                    //float g = grain(st);
-                    //color.rgb = mix(color.rgb, vec3(.067,.706,1.),pow(g,1.4));
+                    float g = grain(st);
+                    color.rgb = mix(color.rgb, vec3(.067,.706,1.),pow(g,1.4));
 
 
     gradient2:
