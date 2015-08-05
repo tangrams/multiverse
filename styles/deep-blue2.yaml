@@ -3,7 +3,8 @@
 
 cameras:
     perspective:
-        type: flat
+        type: isometric
+        vanishing_point: [0, -500]
         
 styles:
     flatlines:
@@ -189,6 +190,21 @@ styles:
                     //mix 2 colors
                     color.rgb = mix(vec3(0.666,0.665,0.665), vec3(0.217,0.483,0.700), random(abs(floor(pos))));
                     color.rgb -= grain(gl_FragCoord.xy)*0.1;
+    buildings:
+        base: polygons
+        texcoords: true
+        shaders:
+            blocks:
+                color: |
+                    float y = v_texcoord.y*40.0;
+                    float v = v_texcoord.y;
+                    color.rgb = mix(vec3(0.212,0.169,0.231),vec3(0.854,0.450,0.752),v);
+                    color.rgb = mix(color.rgb,vec3(0.184,0.671,0.929),mod(floor(y),2.));
+                    
+                    if ( dot(vec3(0.,0.,1.),normal) == 1.0 ) {
+                        // If it's a roof
+                        color.rgb = vec3(0.624,0.878,0.898);
+                    }
 
 sources:
     osm:
@@ -228,6 +244,20 @@ layers:
                 random_dots:
                     order: 5
                     # color: white
+
+    buildings:
+        data: { source: osm }
+        filter: { $zoom: { min: 14 } }
+        draw:
+            polygons:
+                order: 50
+                color: '#999'
+        extruded:
+            filter: { $zoom: { min: 15 } }
+            draw:
+                polygons:
+                    style: buildings
+                    extrude: function () { return feature.height > 0 || $zoom >= 16; }
 
     osm-roads:
         data: { source: osm, layer: roads }
