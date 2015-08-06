@@ -1,0 +1,401 @@
+﻿# Author: Geraldine Sarmiento
+#
+
+sources:
+    # osm:
+    #     type: TopoJSONTiles
+    #     url: //tilestache-dev2-us-east-ext-1189213459.us-east-1.elb.amazonaws.com/osm/all/{z}/{x}/{y}.topojson
+
+    osm:
+        type: TopoJSONTiles
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
+
+cameras:
+    perspective:
+        type: isometric
+        vanishing_point: [0, -500]
+
+styles:
+    flatlines:
+        base: lines
+        lighting: false # ignore lights
+    flatpolys:
+        base: polygons
+        lighting: false # ignore lights
+
+    tools:
+        base: polygons
+        shaders:
+            blocks:
+                global: |
+                    vec2 tile(vec2 _st, float _zoom){
+                      _st *= _zoom;
+                      return fract(_st);
+                    }
+                    
+                    vec2 brickTile(vec2 _st, float _zoom){
+                        _st *= _zoom;
+                        if (fract(_st.y * 0.5) > 0.5){
+                            _st.x += 0.5;
+                        }
+                        return fract(_st);
+                    }
+                    
+                    float circle(vec2 _st, float _radius){
+                      vec2 pos = vec2(0.5)-_st;
+                      return smoothstep(1.0-_radius,1.0-_radius+_radius*0.2,1.-dot(pos,pos)*3.14);
+                    }
+
+                    // GridTile
+                    //=============================
+                    varying vec3 v_pos;
+                    vec2 TileCoords(){return fract(v_pos.xy*0.0002445);}
+                    bool grid(vec2 st, float res, float press){
+                        vec2 grid = fract(st*res);
+                        return grid.x < res*press || grid.y < res*press;
+                    }
+                    float TileGrid(float res){
+                        vec2 st = TileCoords()*100.*res;
+                        float pct = 0.0;
+                        float press = 0.4+(1.0-fract(u_map_position.z))*0.1;
+                        if (grid(st,0.01,press)) pct += 0.5;
+                        if (grid(st,0.1,press)) pct += 0.1;
+                        return pct;
+                    }
+                    float TileGrid(){ return mix(TileGrid(1.),TileGrid(2.),fract(u_map_position.z)); }
+                    // Grain
+                    //=============================
+                    float random(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
+                    float noise(vec2 x) {
+                        vec2 i = floor(x);
+                        vec2 f = fract(x);
+                        float a = random(i);
+                        float b = random(i + vec2(1.0, 0.0));
+                        float c = random(i + vec2(0.0, 1.0));
+                        float d = random(i + vec2(1.0, 1.0));
+                        vec2 u = f * f * (3.0 - 2.0 * f);
+                        return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+                    }
+                    float fbm( in vec2 p ){
+                        float s = 0.0;
+                        float m = 0.0;
+                        float a = 0.5;
+                        for(int i=0; i<2; i++ ){
+                            s += a * noise(p);
+                            m += a;
+                            a *= 0.5;
+                            p *= 2.0;
+                        }
+                        return s/m;
+                    }
+                    float grain(vec2 pos){
+                        vec2 st = pos/u_resolution.xy-vec2(.7);
+                        return dot(st,st)+(fbm(pos*0.6)*0.1);
+                    }
+                position: |
+                    // GridTile
+                    v_pos = a_position.xyz * 32767.;
+    grid:
+        base: polygons
+        mix: tools
+        shaders:
+            blocks:
+                filter: |
+                    vec2 st = (TileCoords()+vec2(.4))*1000.; 
+                    color.rgb = mix(vec3(0.899,0.95,1.0), vec3(0.899,0.95,1.0), gl_FragCoord.x / u_resolution.x);
+                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+                    
+                    color.rgb = mix(color.rgb, vec3(0.475,0.853,0.853), TileGrid());
+                    //float g = grain(st);
+                    //color.rgb = mix(color.rgb, vec3(0.475,0.853,0.853),pow(g,3.5));
+    ground:
+        base: polygons
+        mix: tools
+        shaders:
+            blocks:
+                filter: |
+                    color.rgb -= grain(gl_FragCoord.xy)*0.21;
+                    
+    dots:
+        mix: tools
+        base: polygons
+        shaders:
+            blocks:
+                color: |
+                    vec2 st = TileCoords();
+                    st = brickTile(st,70.0);
+                    float b = circle(st,0.2);
+                    color *= vec4(b);
+                filter: |
+                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.000,0.923,0.907), b);
+                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+                    
+    forest-dots:
+        mix: tools
+        base: polygons
+        shaders:
+            blocks:
+                color: |
+                    vec2 st = TileCoords();
+                    st = brickTile(st,50.0);
+                    float b = circle(st,0.2);
+                    color *= vec4(b);
+                filter: |
+                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.169,0.651,0.631), b);
+                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+                    
+    golf-dots:
+        mix: tools
+        base: polygons
+        shaders:
+            blocks:
+                color: |
+                    vec2 st = TileCoords();
+                    st = brickTile(st,70.0);
+                    float b = circle(st,0.2);
+                    color *= vec4(b);
+                filter: |
+                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.000,0.779,0.328), b);
+                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+                    
+    university-dots:
+        mix: tools
+        base: polygons
+        shaders:
+            blocks:
+                color: |
+                    vec2 st = TileCoords();
+                    st = brickTile(st,70.0);
+                    float b = circle(st,0.2);
+                    color *= vec4(b);
+                filter: |
+                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.779,0.730,0.724), b);
+                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+                    
+    hospital-dots:
+        mix: tools
+        base: polygons
+        shaders:
+            blocks:
+                color: |
+                    vec2 st = TileCoords();
+                    st = brickTile(st,70.0);
+                    float b = circle(st,0.2);
+                    color *= vec4(b);
+                filter: |
+                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.840,0.503,0.541), b);
+                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+                    
+                    
+    buildings_grid:
+        base: polygons
+        texcoords: true
+        shaders:
+            blocks:
+                color: |
+                    vec2 st = v_texcoord.xy;
+                    vec2 f_st = fract(st*10.);
+                    vec2 i_st = floor(st*10.);
+                    // color.rg = f_st;
+                    
+                    vec2 pct = step(vec2(0.09),f_st);;
+                    color.rgb -= mix(vec3(0.0), vec3(0.35),(1.0-(pct.x * pct.y)));
+                    
+                    if ( dot(vec3(0.,0.,1.),normal) == 1.0 ) {
+                        // If it's a roof
+                        color.rgb = vec3(.870);
+                    }
+
+scene:
+    background:
+        color: [1.0,1.0,1.0]
+
+layers:
+    earth:
+        data: { source: osm, layer: earth }
+        draw:
+            lines:
+                order: 4
+                width: 1px
+                color: '#85EBFF'
+            ground:
+                order: 0
+                color: [0.870,0.870,0.870]
+
+    water:
+        data: { source: osm, layer: water }
+        draw:
+            grid:
+                order: 1
+
+    landuse:
+        data: { source: osm }
+        park:
+            filter:
+                kind: park
+            draw:
+                dots:
+                    order: 4
+        # cemetery:
+        #     filter:
+        #         kind: cemetery
+        #     draw:
+        #         dots:
+        #             order: 4
+        forest:
+            filter:
+                kind: forest
+            draw:
+                forest-dots:
+                    order: 4
+        # recreation_ground:
+        #     filter:
+        #         kind: recreation_ground
+        #     draw:
+        #         dots:
+        #             order: 4
+        #             color: [0.345,0.847,0.784]
+        # farm:
+        #     filter:
+        #         kind: [farm, farmland]
+        #     draw:
+        #         dots:
+        #             order: 4
+        #             color: [0.345,0.847,0.784]
+        golf_course:
+            filter:
+                kind: golf_course
+            draw:
+                golf-dots:
+                    order: 4
+                    color: [0.847, 0.082, 0.082]
+        # nature_reserve:
+        #     filter:
+        #         kind: nature_reserve
+        #     draw:
+        #         dots:
+        #             order: 4
+        #             color: [0.345,0.847,0.784]
+        # stadium:
+        #     filter:
+        #         kind: stadium
+        #     draw:
+        #         dots:
+        #             order: 4
+        #             color: [0.945, 0.141, 1.000]
+        university:
+            filter:
+                kind: university
+            draw:
+                university-dots:
+                    order: 5
+        school:
+            filter:
+                kind: school
+            draw:
+                university-dots:
+                    order: 5
+        hospital:
+            filter:
+                kind: hospital
+            draw:
+                hospital-dots:
+                    order: 5
+        # playground:
+        #     filter:
+        #         kind: playground
+        #     draw:
+        #         dots:
+        #             order: 5
+        #             color: [0.161, 1.000, 0.992]
+        # pedestrian:
+        #     filter:
+        #         kind: pedestrian
+        #     draw:
+        #         dots:
+        #             order: 5
+        #             color: [1.000, 0.890, 0.000]    
+        # retail:
+        #     filter:
+        #         kind: retail
+        #     draw:
+        #         retail-dots:
+        #             order: 5
+        # commercial:
+        #     filter:
+        #         kind: commercial
+        #     draw:
+        #         dots:
+        #             order: 5
+        #             color: [0.553, 0.851, 0.502]
+        runway:
+            filter:
+                kind: runway
+            draw:
+                polygons:
+                    order: 5
+                    color: [0.589,0.175,0.854]
+        apron:
+            filter:
+                kind: apron
+            draw:
+                polygons:
+                    order: 5
+                    color: [0.812, 0.812, 0.812]
+                    
+        # parking:
+        #     filter:
+        #         kind: parking
+        #     draw:
+        #         polygons:
+        #             order: 5
+        #             color: [0.200, 0.200, 0.200]
+        # railway:
+        #     filter:
+        #         kind: railway
+        #     draw:
+        #         polygons:
+        #             order: 5
+        #             color: gray
+        # place_of_worship:
+        #     filter:
+        #         kind: place_of_worship
+        #     draw:
+        #         polygons:
+        #             order: 5
+        #             color: [0.341, 0.443, 0.451] 
+        # industrial:
+        #     filter:
+        #         kind: industrial
+        #     draw:
+        #         dots:
+        #             order: 5
+        #             color: gray
+        # residential:
+        #     filter:
+        #         kind: residential
+        #     draw:
+        #         dots:
+        #             order: 5
+        #             color: [0.349, 0.349, 0.349]
+        
+    buildings:
+        data: { source: osm }
+        filter: { $zoom: { min: 14 } }
+        draw:
+            polygons:
+                order: 5
+                color: [0.784, 0.784, 0.784]
+            outline:
+                style: lines
+                order: 6
+                color: [0.600, 0.600, 0.600]
+                width: [[14,0.1px],[16,1px],[18,1.25px]]
+                extrude: true
+                tile_edges: true
+        extruded:
+            filter: { $zoom: { min: 15 } }
+            draw:
+                polygons:
+                    style: buildings_grid
+                    extrude: function () { return feature.height > 0 || $zoom >= 16; }
