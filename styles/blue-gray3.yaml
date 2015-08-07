@@ -26,8 +26,8 @@ bannana-colors:
     major_road2a:                &major_road2a               [1.0,1.0,1.0]
     major_road2b:                &major_road2b               [1.0,1.0,1.0]
     major_road3:                 &major_road3                [1.0,1.0,1.0]
-    major_casing1:               &major_casing1              [0.870,0.870,0.870] # same as highway_casing1
-    major_casing2:               &major_casing2              [0.870,0.870,0.870] # zoomed out
+    major_casing1:               &major_casing1              [0.770,0.770,0.770] # same as highway_casing1
+    major_casing2:               &major_casing2              [0.770,0.770,0.770] # zoomed out
     major_tunnel1:               &major_tunnel1              [.870,0.870,0.870]  # light orange (major_route1)
     major_tunnel_casing1:        &major_tunnel_casing1       [0.99, 0.99, 0.99]
     major_route1:                &major_route1               [1.000,0.631,0.590]
@@ -42,7 +42,7 @@ bannana-colors:
     minor_tunnel1:               &minor_tunnel1              [0.8, 0.8, 0.7]
     minor_tunnel_casing1:        &minor_tunnel_casing1       white
     service_road1:               &service_road1              white
-    service_road_casing1:        &service_road_casing1       [0.870,0.870,0.870]
+    service_road_casing1:        &service_road_casing1       [0.770,0.770,0.770]
     path1:                       &path1                      [0.91,0.91,0.91]
     path2:                       &path2                      [0.91,0.91,0.91]    # zoomed out
     path_casing1:                &path_casing1               [0.870,0.870,0.870]
@@ -545,7 +545,7 @@ styles:
         shaders:
             blocks:
                 filter: |
-                    color.rgb -= grain(gl_FragCoord.xy)*0.21;
+                    color.rgb -= (0.22-grain(gl_FragCoord.xy))*0.21;
                     
     dots:
         mix: tools
@@ -558,64 +558,56 @@ styles:
                     float b = circle(st,0.2);
                     color *= vec4(b);
                 filter: |
-                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.000,0.923,0.907), b);
-                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+                    color.rgb = mix(COLOR1, COLOR2, b);
+                    color.rgb -= (0.22-grain(gl_FragCoord.xy))*0.21;
+                    
+    park-dots:
+        mix: dots
+        shaders:
+            defines:
+
+                    COLOR1: vec3(0.850,0.850,0.850) 
+                    COLOR2: vec3(0.000,0.923,0.907)
                     
     forest-dots:
-        mix: tools
-        base: polygons
+        mix: dots
         shaders:
-            blocks:
-                color: |
-                    vec2 st = TileCoords();
-                    st = brickTile(st,70.0);
-                    float b = circle(st,0.2);
-                    color *= vec4(b);
-                filter: |
-                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.169,0.651,0.631), b);
-                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+            defines:
+
+                    COLOR1: vec3(0.850,0.850,0.850) 
+                    COLOR2: vec3(0.169,0.651,0.631)
                     
     golf-dots:
-        mix: tools
-        base: polygons
+        mix: dots
         shaders:
-            blocks:
-                color: |
-                    vec2 st = TileCoords();
-                    st = brickTile(st,70.0);
-                    float b = circle(st,0.2);
-                    color *= vec4(b);
-                filter: |
-                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.000,0.779,0.328), b);
-                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+            defines:
+
+                    COLOR1: vec3(0.850,0.850,0.850) 
+                    COLOR2: vec3(0.000,0.779,0.328)
                     
     hospital-dots:
-        mix: tools
-        base: polygons
+        mix: dots
         shaders:
-            blocks:
-                color: |
-                    vec2 st = TileCoords();
-                    st = brickTile(st,70.0);
-                    float b = circle(st,0.2);
-                    color *= vec4(b);
-                filter: |
-                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.840,0.503,0.541), b);
-                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+            defines:
+
+                    COLOR1: vec3(0.850,0.850,0.850) 
+                    COLOR2: vec3(0.840,0.503,0.541)
                     
     university-dots:
-        mix: tools
-        base: polygons
+        mix: dots
         shaders:
-            blocks:
-                color: |
-                    vec2 st = TileCoords();
-                    st = brickTile(st,70.0);
-                    float b = circle(st,0.2);
-                    color *= vec4(b);
-                filter: |
-                    color.rgb = mix(vec3(0.850,0.850,0.850), vec3(0.779,0.730,0.724), b);
-                    color.rgb -= grain(gl_FragCoord.xy)*0.1;
+            defines:
+
+                    COLOR1: vec3(0.850,0.850,0.850) 
+                    COLOR2: vec3(0.779,0.730,0.724)
+                    
+    cemetery-dots:
+        mix: dots
+        shaders:
+            defines:
+
+                    COLOR1: vec3(0.850,0.850,0.850) 
+                    COLOR2: vec3(0.547,0.760,0.590)
                     
     buildings_grid:
         base: polygons
@@ -648,14 +640,14 @@ layers:
             ground:
                 order: 0
                 color: [0.870,0.870,0.870]
-
-    water:
-        data: { source: osm, layer: water }
-        draw:
             lines:
                 order: 10
                 width: 1px
                 color: '#85EBFF'
+
+    water:
+        data: { source: osm, layer: water }
+        draw:
             grid:
                 order: -1
                 color: *water1
@@ -714,7 +706,7 @@ layers:
                     # put highways on top of all other roads
                     order: 8
                     color: *highway1
-                    width: [[9, 2px], [14, 3px], [16, 4px], [17, 10m]]
+                    width: [[5, 1px], [7, 1.4px], [9, 1.5px], [14, 3px], [16, 4px], [17, 10m]]
                     outline:
                         color: *highway_casing1
                         width: [[9, 0], [12, 1px], [16, 2px]]
@@ -722,11 +714,11 @@ layers:
                 filter: { type: ['Secondary Highway','Road'] }
                 draw:
                     flatlines:
-                        color: [[13, *major_road2], [17, *major_road1]]
+                        color: [[5, [1.000,0.631,0.588]], [8, [1.000,0.707,0.600]], [13, *major_road2], [17, *major_road1]]
                         #color: red
-                        width: [[9, 1px], [11, 1.5px], [13, 2.5px], [16, 2.5px], [19, 8m]]
+                        width: [[5, 0.25px], [7, 0.5px], [9, 1.5px], [11, 1.5px], [13, 2.5px], [16, 2.5px], [19, 8m]]
                         outline:
-                            width: [[8, 0.0px], [9, 0.5px], [11, .5px], [16, .75px]]
+                            width: [[8, 0.0px], [9, 0.0px], [11, .5px], [16, .75px]]
             minor_road:
                 filter: { type: 'Unknown' }
                 draw:
@@ -752,7 +744,7 @@ layers:
                     # put highways on top of all other roads
                     order: 8
                     color: *highway1
-                    width: [[8, 2px], [9, 2.5px], [14, 4.0px], [15, 6.0px], [16, 6.5px], [17, 20m]]
+                    width: [[8, 1px], [9, 1.25px], [11, 1.5px], [14, 4.0px], [15, 6.0px], [16, 6.5px], [17, 20m]]
                     outline:
                         color: *highway_casing1
                         width: [[9, 0.5px], [12, 1px], [16, 2px], [18, 6px]]
@@ -768,8 +760,8 @@ layers:
                 filter: { is_link: yes } # on- and off-ramps, etc
                 draw:
                     flatlines:
-                        color: *highway_link1
-                        width: [[9, 1px], [14, 2.5px], [16, 4px], [18, 9m]]
+                        color: [[9, *highway_link1], [16, *highway_link1], [17, [0.980,0.945,0.941]]]
+                        width: [[9, 0px], [11, 0.5px], [13, 1px], [14, 2px], [16, 4px], [18, 9m]]
                         outline:
                             color: *highway_casing1
                             width: [[10, 1px], [14, 1px], [18, 1.5px]]
@@ -807,19 +799,19 @@ layers:
                 filter: { highway: [trunk, primary] }
                 draw:
                     flatlines:
-                        color: [[8, *major_road3], [9, *major_road2b], [14, *major_road2], [15, *major_road1b], [17, *major_road1]]
-                        width: [[9, 1.0px], [11, 1.0px], [13, 2.5px], [14, 4.5px], [15, 5.5px], [16, 7.0px], [19, 14m]]
+                        color: [[8, [0.9,0.9,0.9]], [9, [0.9,0.9,0.9]], [14, *major_road2], [15, *major_road1b], [17, *major_road1]]
+                        width: [[9, 0.25px], [11, 1.0px], [13, 2.5px], [14, 4.5px], [15, 5.5px], [16, 7.0px], [19, 14m]]
                         outline:
-                            width: [[9, 0.5px], [11, .75px], [12, 1px], [14, 1.5px], [16, 2.5px], [18, 4.5px]]
+                            width: [[9, 0.0px], [11, 0px], [12, 0px], [14, 0px], [16, 2.5px], [18, 4.5px]]
                 routes:
                     filter: { ref: true }
                     draw:
                         flatlines:
                             color: [[8,*major_route2],[10,*major_route1]]
-                            width: [[9, 1.5px], [11, 2.0px], [14, 3.5px], [15, 4.5px], [16, 6.0px], [17, 12m]]
+                            width: [[9, 0.5px], [10, 0.75px], [11, 1.2px], [14, 3.5px], [15, 4.5px], [16, 6.0px], [17, 12m]]
                             outline:
                                 color: *major_casing1
-                                width: [[9, 0.5px], [11, 0.75px], [12, 1px], [16, 2px], [18, 4.5px]]
+                                width: [[9, 0.0px], [11, 0px], [12, 0px], [16, 0px], [18, 0px]]
                     tunnel:
                         filter: {is_tunnel: yes, $zoom: {min: 13} }
                         draw:
@@ -841,7 +833,7 @@ layers:
                 filter: { is_link: yes } # on- and off-ramps, etc
                 draw:
                     flatlines:
-                        width: [[10, 1px], [14, 3px], [16, 5px], [18, 10m]]
+                        width: [[10, 0.5px], [14, 2px], [16, 5px], [18, 10m]]
                         outline:
                             color: *major_casing1
                             width: [[10, 1px], [14, 1px], [18, 1.5px]]
@@ -858,9 +850,9 @@ layers:
                 draw:
                     flatlines:
                         color: [[13,*major_road2b], [14,*major_road2a], [15,*major_road1b], [17,*major_road1]]
-                        width: [[11, 1.0px], [12, 1.0px], [13, 2.0px], [14, 3.5px], [15, 4.5px], [16, 7.0px], [19, 16m]]
+                        width: [[11, 0.65px], [12, 1.0px], [13, 2.0px], [14, 3.5px], [15, 4.5px], [16, 7.0px], [19, 16m]]
                         outline:
-                            width: [[11, 0px], [12, .75px], [13, 1.0px], [14, 1.75px], [15, 2.0px], [16, 3.0px], [18, 4.0px]]
+                            width: [[11, 0px], [12, 0px], [13, 0px], [14, 0px], [15, 2.0px], [16, 3.0px], [18, 4.0px]]
                 routes:
                     filter: { ref: true, $zoom: { min: 12} }
                     draw:
@@ -881,7 +873,7 @@ layers:
                         color: [[13,*major_road2b], [14,*major_road2a], [15,*major_road1b], [17,*major_road1]]
                         width: [[11, 0.5px], [12, .75px], [14, 2.5px], [15, 4.0px], [16, 4.5px], [19, 10m]]
                         outline:
-                            width: [[12, 0px], [13, 0.5px], [14, 1.0px], [15, 1.5px], [16, 2.0px], [18, 3.5px]]
+                            width: [[12, 0px], [13, 0px], [14, 0px], [15, 1.5px], [16, 2.0px], [18, 3.5px]]
                 routes:
                     filter: { ref: true, $zoom: { min: 12} }
                     draw:
@@ -910,10 +902,10 @@ layers:
             draw:
                 flatlines:
                     # order: 3
-                    color: [[12, *minor_road5], [13, *minor_road4], [14, *minor_road3]]
-                    width: [[12, 0.75px], [13, 1.5px], [14, 1.5px], [15, 2.5px], [16, 8m]]
+                    color: [[12, [0.9,0.9,0.9]], [13, [0.9,0.9,0.9]], [14, [1.0,1.0,1.0]]]
+                    width: [[12, 0.65px], [13, 0.75px], [14, 1px], [15, 2.5px], [16, 8m]]
                     outline:
-                        width: [[12, 0.0px], [13, 0.25px], [14, 0.5px], [17, 1.0px]]
+                        width: [[12, 0.0px], [13, 0px], [15, 0px], [17, 1.0px]]
             tunnel:
                 filter: {is_tunnel: yes, $zoom: {min: 13} }
                 draw:
@@ -1079,22 +1071,20 @@ layers:
             filter:
                 kind: park
             draw:
-                dots:
+                park-dots:
                     order: 1
-        # cemetery:
-        #     filter:
-        #         kind: cemetery
-        #     draw:
-        #         polygons:
-        #             order: 2
-        #             color: *green2
+        cemetery:
+            filter:
+                kind: cemetery
+            draw:
+                cemetery-dots:
+                    order: 2
         forest:
             filter:
                 kind: forest
             draw:
                 forest-dots:
                     order: 1
-                    color: *green7
         # recreation_ground:
         #     filter:
         #         kind: recreation_ground
