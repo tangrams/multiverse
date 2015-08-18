@@ -563,7 +563,7 @@ styles:
         shaders:
             defines:
                     COLOR1: vec3(1.00,1.00,1.00)
-                    COLOR2: vec3(0.000,0.000,0.000)
+                    COLOR2: vec3(0.295,1.000,0.000)
 
     conservation-dots:
         mix: dots
@@ -600,7 +600,7 @@ styles:
             defines:
 
                     COLOR1: vec3(1.00,1.00,1.00)
-                    COLOR2: vec3(0.000,0.000,0.000)
+                    COLOR2: vec3(0.540,0.720,0.546)
 
     # icons:
     #     base: points
@@ -743,11 +743,11 @@ layers:
                 filter: { is_link: yes } # on- and off-ramps, etc
                 draw:
                     flatlines:
-                        color: [[9, [0.0,0.0,0.0]], [11, [0.0,0.0,0.0]], [13, [0.0,0.0,0.0]], [14, [1.000,0.992,0.286]], [15, [1.000,0.992,0.286]], [17, [1.000,0.992,0.286]]]
-                        width: [[9, 0px], [11, 0.15px], [12, 0.5px], [13, 0.5px], [14, 0.15px], [16, 3px], [18, 9m]]
+                        color: [[9, [0.0,0.0,0.0]], [11, [0.0,0.0,0.0]], [13, [1.000,0.992,0.286]], [14, [1.000,0.992,0.286]], [15, [1.000,0.992,0.286]], [17, [1.000,0.992,0.286]]]
+                        width: [[9, 0px], [11, 0.15px], [12, 0.5px], [13, 0.15px], [14, 1.4px], [15, 2.0px], [16, 3px], [18, 9m]]
                         outline:
-                            color: [[14, [0.5,0.5,0.5]], [15, [0.2,0.2,0.2]]]
-                            width: [[9, 0px], [10, 0px], [12, 0px], [13, 0px], [14, 0.45px], [15, 0.75px], [16, 1.25px], [17, 1.5px]]
+                            color: [[13, [0.5,0.5,0.5]], [15, [0.2,0.2,0.2]]]
+                            width: [[9, 0px], [10, 0px], [12, 0px], [13, 0.45px], [14, 0.65px], [15, 0.75px], [16, 1.25px], [17, 1.5px]]
                 early_link:
                     filter: { $zoom: {min: 13, max: 15} }
                     draw:
@@ -766,9 +766,9 @@ layers:
                 draw:
                     flatlines:
                         order: 6
-                        color: *highway_tunnel1
+                        color: [[13,[0.97,0.97,0.97]], [17,[0.98,0.98,0.98]]]
                         outline:
-                            color: *highway_tunnel_casing1
+                            color: [[13,[0.7,0.7,0.7]], [15,[0.85,0.85,0.85]], [17,[0.9,0.9,0.9]]]
             labels-highway-early:
                 filter: { $zoom: { min: 7, max: 10 } }
                 draw:
@@ -842,7 +842,7 @@ layers:
                 draw:
                     flatlines:
                         color: [[8, [0.9,0.9,0.9]], [9, [0.9,0.9,0.9]], [12, [0.65,0.65,0.65]], [13, [0.5,0.5,0.5]], [14, [0.6,0.6,0.6]], [15, [1.0,1.0,1.0]], [16, [1.0,1.0,1.0]]]
-                        width: [[9, 0.25px], [11, 0.5px], [12, 0.75px], [13, 0.5px], [14, 2px], [15, 0.15px], [16, 7.0px], [17, 11px], [19, 14m]]
+                        width: [[9, 0.25px], [11, 0.5px], [12, 0.75px], [13, 0.5px], [14, 2px], [15, 0.15px], [16, 6.0px], [17, 11px], [19, 14m]]
                         outline:
                             color: [[12,[0.0,0.0,0.0]], [13,[0.5,0.5,0.5]], [15, [0.45,0.45,0.45]], [16, [0.0,0.0,0.0]]]
                             width: [[9, 0.0px], [11, 0px], [12, 0px], [13, 0.25px], [14, 0px], [15, 1.25px], [16, 1.25px], [17, 1.5px]]
@@ -851,7 +851,7 @@ layers:
                     draw:
                         flatlines:
                             color: [[8, [0.000,0.426,1.000]], [9, [0.000,0.426,1.000]], [10, [0.000,0.426,1.000]], [11, [1.000,0.992,0.286]], [12, [1.000,0.992,0.286]], [14, [1.000,0.992,0.286]]]
-                            width: [[9, 0.5px], [10, 0.5px], [11, 0.15px], [12, 1px], [13, 3px], [14, 4px], [15, 5px], [16, 10px], [17, 12m]]
+                            width: [[9, 0.5px], [10, 0.5px], [11, 0.15px], [12, 1px], [13, 3px], [14, 3.5px], [15, 4px], [16, 5px], [17, 12m]]
                             outline:
                                 color: [[8,*major_casing1], [11, [0.000,0.426,1.000]], [12,*major_casing1], [14, [0.3,0.3,0.3]], [16,[0.0,0.0,0.0]]]
                                 width: [[9, 0.0px], [11, 0.35px], [12, 0.5px], [13, 1px], [15, 1.25px], [16, 1.25px], [17, 1.5px]]
@@ -860,9 +860,9 @@ layers:
                         draw:
                             flatlines:
                                 order: 4
-                                color: *major_tunnel1
+                                color: [[13,[0.96,0.96,0.96]], [17,[0.97,0.97,0.97]]]
                                 outline:
-                                    color: *major_tunnel_casing1
+                                    color: [[13,[0.7,0.7,0.7]], [15,[0.75,0.75,0.75]]]
                     z-order:
                         #filter: { $zoom: {min: 12} }
                         draw:
@@ -929,11 +929,11 @@ layers:
                 filter: { is_link: yes } # on- and off-ramps, etc
                 draw:
                     flatlines:
-                        color: [[14, [0.6,0.6,0.6]], [15, [0.5,0.5,0.5]], [16, [1.0,1.0,1.0]]]
-                        width: [[10, 0px], [14, 1px], [15, 1.5px], [16, 0.125px], [18, 10m]]
+                        color: [[14, [0.6,0.6,0.6]], [15, [1.0,1.0,1.0]]]
+                        width: [[10, 0px], [14, 1px], [15, 0.15px], [16, 3.0px], [18, 10m]]
                         outline:
-                            color: [[16, [0.5,0.5,0.5]], [16, *major_casing1]]
-                            width: [[10, 0px], [14, 0px], [15, 0px], [16, 0.5px], [18, 1px]]
+                            color: [[15, [0.5,0.5,0.5]], [16, [0.4,0.4,0.4]]]
+                            width: [[10, 0px], [14, 0px], [15, 0.6px], [16, 0.75px], [18, 1px]]
             tunnel:
                 filter: {is_tunnel: yes, $zoom: {min: 13} }
                 draw:
@@ -947,7 +947,7 @@ layers:
                 draw:
                     flatlines:
                         color: [[11, [0.75,0.75,0.75]], [12, [0.65,0.65,0.65]], [13, [0.5,0.5,0.5]], [14, [0.6,0.6,0.6]], [15, [1.0,1.0,1.0]], [16, [1.0,1.0,1.0]]]
-                        width: [[11, 0.5px], [12, 0.5px], [13, 0.5px], [14, 1.25px], [15, 0.15px], [16, 7.0px], [17, 9.0px], [19, 18m]]
+                        width: [[11, 0.5px], [12, 0.5px], [13, 0.5px], [14, 1.25px], [15, 0.15px], [16, 6.0px], [17, 9.0px], [19, 18m]]
                         outline:
                             color: [[15, [0.45,0.45,0.45]], [16, [0.0,0.0,0.0]]]
                             width: [[11, 0px], [12, 0px], [13, 0.25px], [14, 0px], [15, 1.0px], [16, 1.25px], [17, 1.5px]]
@@ -956,7 +956,7 @@ layers:
                     draw:
                         flatlines:
                             color: [[11, [0.75,0.75,0.75]], [12, [0.65,0.65,0.65]], [13, [0.5,0.5,0.5]], [14, [0.6,0.6,0.6]], [15, [1.0,1.0,1.0]], [16, [1.0,1.0,1.0]]]
-                            width: [[11, 0.5px], [12, 0.5px], [13, 0.5px], [14, 1.25px], [15, 0.15px], [16, 7.0px], [17, 9.0px], [19, 18m]]
+                            width: [[11, 0.5px], [12, 0.5px], [13, 0.5px], [14, 1.25px], [15, 0.15px], [16, 6.0px], [17, 9.0px], [19, 18m]]
                             outline:
                                 color: [[15, [0.5,0.5,0.5]], [16, [0.0,0.0,0.0]]]
                                 width: [[11, 0px], [12, 0px], [13, 0.25px], [14, 0px], [15, 1.0px], [16, 1.25px], [17, 1.5px]]
@@ -1038,10 +1038,10 @@ layers:
                     filter: { is_link: yes } # on- and off-ramps, etc
                     draw:
                         flatlines:
-                            color: [[11, [0.4,0.4,0.4]], [14, [0.6,0.6,0.6]], [15, [0.4,0.4,0.4]], [16, *major_road1]]
-                            width: [[11, 0.0px], [12, 0.5px], [14, 0.5px], [16, 2.0px], [19, 7m]]
+                            color: [[11, [0.4,0.4,0.4]], [14, [0.6,0.6,0.6]], [15, [0.5,0.5,0.5]], [16, [1.0,1.0,1.0]]]
+                            width: [[11, 0.0px], [12, 0.5px], [14, 0.5px], [15, 0.6px], [16, 0.15px], [19, 7m]]
                             outline:
-                                color: [[12,*major_casing2],[13,*major_casing1]]
+                                color: [[12,*major_casing2], [13,*major_casing1], [16, [0.7,0.7,0.7]], [17, [0.2,0.2,0.2]]]
                                 width: [[12, 0px], [14, 0px], [15, 0px], [16, 1px], [18, 1px]]
                 labels-tertiary:
                     filter: { $zoom: { min: 14, max: 15 } }
@@ -1088,9 +1088,9 @@ layers:
                 draw:
                     flatlines:
                         order: 4
-                        color: *minor_tunnel1
+                        color: [[13,[0.96,0.96,0.96]], [17,[0.97,0.97,0.97]]]
                         outline:
-                            color: *minor_tunnel_casing1
+                            color: [[13,[0.7,0.7,0.7]], [15,[0.8,0.8,0.8]]]
 
             labels-minor_road:
                 filter: { $zoom: { min: 16, max: 18 } }
@@ -1118,7 +1118,7 @@ layers:
                 flatlines:
                     # order: 3
                     color: [[15, [0.7,0.7,0.7]], [16, [1.0,1.0,1.0]], [17, [1.0,1.0,1.0]]]
-                    width: [[15, 1.25px], [16, 0.15px], [18, 6m]]
+                    width: [[15, 1.25px], [16, 0.15px], [17, 4.0px], [18, 6m]]
                     outline:
                         color: [[16, [0.7,0.7,0.7]], [16, [0.2,0.2,0.2]]]
                         width: [[15, 0.0px], [16, 0.75px], [17, 1.0px]]
@@ -1146,9 +1146,9 @@ layers:
             filter: { kind: path, not: { highway: steps } }
             draw:
                 flatlines:
-                    color: [[14, [0.7,0.7,0.7]], [15, [0.8,0.8,0.8]], [17, [1.0,1.0,1.0]]]
+                    color: [[14, [0.7,0.7,0.7]], [15, [0.8,0.8,0.8]], [16, [0.8,0.8,0.8]], [17, [1.0,1.0,1.0]]]
                     order: 6
-                    width: [[14, 10.75px], [15, 0.75px], [16, 1px], [17, 4px], [18, 6px]]
+                    width: [[14, 10.75px], [15, 0.75px], [16, 1px], [17, 2.5px], [18, 6px]]
                     outline:
                         color: [[15, *path_casing1], [14, [0.000,0.00,0.000]], [16, [0.7,0.7,0.7]], [17, [0.55,0.55,0.55]]] 
                         width: [[14, 0px], [15, 0px], [16, 0px], [17, 0.5px]]
@@ -1156,11 +1156,11 @@ layers:
                 filter: {is_bridge: yes }
                 draw:
                     flatlines:
-                        color: [[17, [1.0,1.0,1.0]]]
-                        width: [[15, 1px], [17, 3px]]
+                        color: [[16, [0.8,0.8,0.8]], [17, [1.0,1.0,1.0]]]
+                        width: [[15, 1px], [16, 1px], [17, 3px]]
                         outline:
                             color: [[15,*path_bridge_casing2],[16, [0.5,0.5,0.5]]]
-                            width: [[15, 0.5px], [16, 1px], [18, 1px]]
+                            width: [[15, 0.5px], [16, 0px], [18, 1px]]
             labels-path:
                 filter: { $zoom: { min: 17 } }
                 draw:
@@ -1331,20 +1331,108 @@ layers:
                     fill: [1.000,0.000,0.933]
                     stroke: { color: *text_stroke, width: 4 }
 
-    populated-places:
+    populated-places-z6:
         data: { source: osm, layer: places }
-        filter: { name: true, not: { kind: [county, state, island] }, $zoom: {min: 6} }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [6] }
         draw:
             text:
                 visible: *text_visible_populated_places
                 font:
-                    typeface: 800 14px Helvetica
+                    typeface: 500 12px Helvetica
+                    fill: *text_fill
+                    stroke: { color: *text_stroke, width: 4 }
+
+    populated-places-z7:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [7] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 500 12px Helvetica
+                    fill: *text_fill
+                    stroke: { color: *text_stroke, width: 4 }
+
+    populated-places-z8:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [8,9] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 500 12px Helvetica
+                    fill: *text_fill
+                    stroke: { color: *text_stroke, width: 4 }
+
+    populated-places-z10:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [10] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 12px Helvetica
                     fill: *text_fill
                     stroke: { color: *text_stroke, width: 4 }
         # nix podunk burgs under z15
         minor-places:
             filter: { kind: [hamlet, village, town, neighbourhood, suburb, quarter], $zoom: { max: 15 } }
             visible: false
+
+    populated-places-z11:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [11] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 12px Helvetica
+                    fill: *text_fill
+                    stroke: { color: *text_stroke, width: 4 }
+
+    populated-places-z12:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [12] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 12px Helvetica
+                    fill: *text_fill
+                    stroke: { color: *text_stroke, width: 4 }
+
+    populated-places-z13:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [13] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 12px Helvetica
+                    fill: *text_fill
+                    stroke: { color: *text_stroke, width: 4 }
+
+    populated-places-z14:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [14] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 12px Helvetica
+                    fill: [0.478,0.831,0.992]
+                    stroke: { color: *text_stroke, width: 4 }
+
+    populated-places-z15:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [15] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 15px Helvetica
+                    fill: [0.478,0.831,0.992]
+                    stroke: { color: *text_stroke, width: 4 }
 
 
     landuse_labels:
