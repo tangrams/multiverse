@@ -730,7 +730,7 @@ layers:
                     width: [[8, 1px], [9, 1.25px], [11, 1.2px], [12, 1.3px], [13, 1.5px], [14, 2.25px], [15, 4px], [16, 5.25px], [17, 12m]]
                     outline:
                         color: *highway_casing1
-                        width: [[9, 0.5px], [12, 1px], [16, 2px], [17, 2px], [18, 6px]]
+                        width: [[9, 0.5px], [12, 1px], [16, 1.5px], [17, 2px], [18, 3px]]
             not_link:
                 filter: { not: { is_link: yes }, $zoom: {max: 15} }
                 draw:
@@ -747,7 +747,7 @@ layers:
                         width: [[9, 0px], [11, 0.5px], [13, 1px], [14, 1px], [15, 1.65px], [16, 3px], [17, 7m], [18, 9m]]
                         outline:
                             color: *highway_casing1
-                            width: [[10, 1px], [14, 1px], [14, 0px], [17, 2px], [18, 1.5px]]
+                            width: [[10, 1px], [14, 1px], [14, 0px], [17, 1.125px], [18, 1.5px]]
                 early_link:
                     filter: { $zoom: {min: 13, max: 15} }
                     draw:
@@ -766,9 +766,9 @@ layers:
                 draw:
                     flatlines:
                         order: 4
-                        color: *highway_tunnel1
+                        color: [[16, [0.843,0.843,0.843]], [17, [0.863,0.863,0.863]]]
                         outline:
-                            color: *highway_tunnel_casing1
+                            color: [[16, [0.72,0.72,0.72]], [17, [0.78,0.78,0.78]]]
 
             labels-highway-early:
                 filter: { $zoom: { min: 7, max: 9 } }
@@ -1366,20 +1366,80 @@ layers:
                     fill: *text_fill
                     #stroke: { color: *text_stroke, width: 4 }
 
-    populated-places:
+    populated-places-z6:
         data: { source: osm, layer: places }
-        filter: { name: true, not: { kind: [county, state, island] }, $zoom: {min: 6} }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [6,7] }
         draw:
             text:
                 visible: *text_visible_populated_places
                 font:
-                    typeface: 800 14px Helvetica
+                    typeface: 500 10px Helvetica
                     fill: *text_fill
                     #stroke: { color: *text_stroke, width: 4 }
         # nix podunk burgs under z15
         minor-places:
             filter: { kind: [hamlet, village, town, neighbourhood, suburb, quarter], $zoom: { max: 15 } }
             visible: false
+
+    populated-places-z8:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [8,9] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 500 11px Helvetica
+                    fill: *text_fill
+
+    populated-places-z10:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [10] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 500 11px Helvetica
+                    fill: *text_fill
+
+    populated-places-z11:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [11] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 11px Helvetica
+                    fill: [0.3,0.3,0.3]
+
+    populated-places-z12:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [12] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 11px Helvetica
+                    fill: [0.3,0.3,0.3]
+
+    populated-places-z13:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [13,14] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 12.5px Helvetica
+                    fill: [0.3,0.3,0.3]
+
+    populated-places-z15:
+        data: { source: osm, layer: places }
+        filter: { name: true, not: { kind: [county, state, island] }, $zoom: [15] }
+        draw:
+            text:
+                visible: *text_visible_populated_places
+                font:
+                    typeface: 800 13px Helvetica
+                    fill: [0.5,0.5,0.5]
 
 
     landuse_labels:
