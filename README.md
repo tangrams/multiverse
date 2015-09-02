@@ -1,4 +1,4 @@
-# Wellcome Multiverse!!!
+# Welcome Multiverse!
 
 by Geraldine
 
