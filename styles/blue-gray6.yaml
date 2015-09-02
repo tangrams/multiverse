@@ -78,19 +78,19 @@ bannana-colors:
         - &scene1      '#eee'              # map background, water
         - &water1      [0.83, 0.83, 0.83]  # water
         - &earth1      '#666'              # land color
-        - &green1      '#6e7e6d'           # park
-        - &green2      '#879886'           # cemetery
-        - &green3      '#8ba289'           # golf course
+        - &green1      [0.140,0.843,0.824] # park
+        - &green2      [0.547,0.760,0.590] # cemetery
+        - &green3      [0.000,0.779,0.328] # golf course
         - &green4      '#526054'           # farm faint
         - &green5      '#5a695c'           # farm
         - &green6      '#648560'           # nature reserve
-        - &green7      '#647262'           # forest
-        - &green8      '#849583'           # conservation
+        - &green7      [0.169,0.651,0.631] # forest
+        - &green8      [0.123,0.770,0.587] # conservation
         - &orange1     '#bfb08e'           # stadium
-        - &brown1      '#7e7b6d'           # university
+        - &brown1      [0.814,0.692,0.570] # university
         - &brown2      '#ada497'           # school
         - &brown3      '#c7b7a2'           # playground
-        - &red1        '#ad8d8d'           # hospital
+        - &red1        [0.840,0.503,0.541] # hospital
         - &grey1       '#717171'           # pedestrian, retail, airport apron, parking, church
         - &grey2       [0.5, 0.5, 0.5]     # airport runway
         - &grey3       grey                # railway
@@ -511,76 +511,21 @@ styles:
             blocks:
                 filter: |
                     color.rgb -= (0.22-grain(gl_FragCoord.xy))*0.21;
-                    
+
     dots:
         mix: tools
         base: polygons
         shaders:
+            defines:
+                BACKGROUND: vec3(0.850,0.850,0.850)
             blocks:
                 color: |
                     vec2 st = TileCoords();
                     st = brickTile(st,70.0);
                     float b = circle(st,0.2);
-                    color *= vec4(b);
                 filter: |
-                    color.rgb = mix(COLOR1, COLOR2, b);
+                    color.rgb = mix(BACKGROUND, color.rgb, b);
                     color.rgb -= (0.22-grain(gl_FragCoord.xy))*0.21;
-                    
-    park-dots:
-        mix: dots
-        shaders:
-            defines:
-
-                    COLOR1: vec3(0.850,0.850,0.850)
-                    COLOR2: vec3(0.140,0.843,0.824)
-
-    forest-dots:
-        mix: dots
-        shaders:
-            defines:
-
-                    COLOR1: vec3(0.850,0.850,0.850)
-                    COLOR2: vec3(0.169,0.651,0.631)
-
-    conservation-dots:
-        mix: dots
-        shaders:
-            defines:
-
-                    COLOR1: vec3(0.850,0.850,0.850)
-                    COLOR2: vec3(0.123,0.770,0.587)
-
-    golf-dots:
-        mix: dots
-        shaders:
-            defines:
-
-                    COLOR1: vec3(0.850,0.850,0.850)
-                    COLOR2: vec3(0.000,0.779,0.328)
-
-    hospital-dots:
-        mix: dots
-        shaders:
-            defines:
-
-                    COLOR1: vec3(0.850,0.850,0.850)
-                    COLOR2: vec3(0.840,0.503,0.541)
-
-    university-dots:
-        mix: dots
-        shaders:
-            defines:
-
-                    COLOR1: vec3(0.850,0.850,0.850)
-                    COLOR2: vec3(0.814,0.692,0.570)
-
-    cemetery-dots:
-        mix: dots
-        shaders:
-            defines:
-
-                    COLOR1: vec3(0.850,0.850,0.850)
-                    COLOR2: vec3(0.547,0.760,0.590)
 
     buildings_grid:
         base: polygons
@@ -1634,27 +1579,30 @@ layers:
             filter:
                 kind: park
             draw:
-                park-dots:
+                dots:
                     order: 1
+                    color: *green1
         conservation:
             filter:
                 kind: conservation
             draw:
-                conservation-dots:
+                dots:
                     order: 1
                     color: *green8
         cemetery:
             filter:
                 kind: cemetery
             draw:
-                cemetery-dots:
+                dots:
                     order: 2
+                    color: *green2
         forest:
             filter:
                 kind: forest
             draw:
-                forest-dots:
+                dots:
                     order: 1
+                    color: *green7
         # recreation_ground:
         #     filter:
         #         kind: recreation_ground
@@ -1674,7 +1622,7 @@ layers:
             filter:
                 kind: golf_course
             draw:
-                golf-dots:
+                dots:
                     order: 2
                     color: *green3
         # nature_reserve:
@@ -1695,7 +1643,7 @@ layers:
             filter:
                 kind: university
             draw:
-                university-dots:
+                dots:
                     order: 2
                     color: *brown1
         # school:
@@ -1709,7 +1657,7 @@ layers:
             filter:
                 kind: hospital
             draw:
-                hospital-dots:
+                dots:
                     order: 2
                     color: *red1
         # playground:
