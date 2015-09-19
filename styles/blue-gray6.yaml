@@ -1431,8 +1431,8 @@ layers:
         # add generic icon at high zoom
         generic-labels:
             #filter: { $zoom: { min: 18 } }
-            draw: 
-                pois_text:
+            draw:
+                text:
                     #text_source: function() { return if( feature.name.lenth > 15) { return feature.name.substring(0,20); } else { return feature.name; } }
                     visible: *text_visible_landuse
                     interactive: true
