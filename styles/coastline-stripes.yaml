@@ -1,0 +1,60 @@
+﻿#Author: Geraldine Sarmiento
+
+cameras:
+    perspective:
+        type: flat
+
+styles:
+    tools:
+        base: polygons
+        shaders:
+            blocks:
+                global: |
+
+                    // Stripes
+                    //=============================
+                    mat2 rotate2d(float angle){
+                        return mat2(cos(angle),-sin(angle),
+                                    sin(angle),cos(angle));
+                    }
+                    float stripes(vec2 st){
+                        st = rotate2d(3.14159265358*-0.25 )*st;
+                        return step(.75,1.0-smoothstep(.75,1.,abs(sin(st.x*3.14159265358))));
+                    }
+
+    coast:
+        base: lines
+        mix: tools
+        lighting: false
+        blend: overlay
+        shaders:
+            blocks:
+                color: |
+                    const float pixel_scale = 695.;
+                    float meter_pixels = u_meters_per_pixel / u_device_pixel_ratio;
+                    vec2 st = gl_FragCoord.xy/pixel_scale;
+                    const float dot_wrap = 1000.;
+                    st += mod(u_map_position.xy / meter_pixels, dot_wrap)/pixel_scale;
+                    
+                    color = mix(vec4(color.rgb, 0.9), vec4(0.), stripes(st*130.))*.8; // transparent stripes
+sources:
+    osm:
+        type: TopoJSONTiles
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
+layers:
+    earth:
+        data: { source: osm }
+        draw:
+            coast:
+                order: 4
+                width: 4px
+                color: [0.0,0.0,0.0]
+            polygons:
+                order: 0
+                color: [1.0,1.0,1.0]
+    water:
+        data: { source: osm }
+        draw:
+            polygons:
+                order: 1
+                color: [1.0,1.0,1.0]

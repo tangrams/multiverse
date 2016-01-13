@@ -1,0 +1,85 @@
+﻿#Author: Geraldine Sarmiento, Patricio Gonzalez Vivo
+
+cameras:
+    perspective:
+        type: isometric
+        vanishing_point: [0, -500]
+
+styles:
+    buildings:
+        base: polygons
+        texcoords: true
+        shaders:
+            blocks:
+                color: |
+                    float y = v_texcoord.y*12.0;
+                    float v = v_texcoord.y;
+                    //color.rgb = mix(vec3(0.0,0.0,0.0),color.rgb,v);
+                    color.rgb = mix(color.rgb,vec3(0.0,0.0,0.0),mod(floor(y),2.0));
+                    
+                    if ( dot(vec3(0.,0.,1.),normal) == 1.0 ) {
+                        // If it's a roof
+                        color.rgb = vec3(1.0,1.0,1.0);
+                    }
+                    
+scene:
+    background:
+        color: [1.000, 1.000, 1.000]
+
+sources:
+    osm:
+        type: TopoJSONTiles
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?
+layers:
+    water:
+        data: { source: osm, layer: water }
+        draw:
+            polygons:
+                order: 0
+                color: [1.000, 1.000, 1.000]
+        water-boundary-ocean-early:
+            filter: { boundary: yes, kind: ocean, $zoom: {min: 1} }
+            draw:
+                lines:
+                    order: 10
+                    color: [0.000, 0.000, 0.000]
+                    width: 1px
+        water_boundaries-not-ocean:
+            filter: { boundary: yes, not: { kind: ocean }, $zoom: { min: 9 } }
+            draw:
+                lines:
+                    order: 30
+                    color: [0.000, 0.000, 0.000]
+                    width: 1px
+            early:
+                filter: { $zoom: { min: 16 } }
+                draw:
+                    lines: { order: 19 }
+            riverbank:
+                # river boundaries like the thames in london, la seine in paris
+                filter: { kind: riverbank }
+                draw:
+                    lines:
+                        color: [0.000, 0.000, 0.000]
+                        width: 1px
+
+    earth:
+        data: { source: osm }
+        draw:
+            polygons:
+                order: 0
+                color: [1.0,1.0,1.0]
+
+    buildings:
+        data: { source: osm }
+        filter: { $zoom: { min: 14 } }
+        draw:
+            polygons:
+                order: 50
+                color: [1.000, 1.000, 1.000]
+        extruded:
+            filter: { $zoom: { min: 15 } }
+            draw:
+                polygons:
+                    style: buildings
+                    extrude: function () { return feature.height > 0 || $zoom >= 16; }

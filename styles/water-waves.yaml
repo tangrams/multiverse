@@ -1,0 +1,60 @@
+﻿# Author: Geraldine Sarmiento, Patricio Gonzalez Vivo
+
+cameras:
+    perspective:
+        type: flat
+        vanishing_point: [0, -500]
+
+styles:
+    tools:
+        base: polygons
+        shaders:
+            blocks:
+                global: |          
+                    // Stripes
+                    //=============================
+                    float stripes(vec2 st){
+                        return step(.3,1.0-smoothstep(.5,1.,abs(sin(st.y*3.14159265358))));
+                    }
+
+    waves:
+        base: polygons
+        mix: tools
+        shaders:
+            blocks:
+                filter: |
+                    float wave_scale = 695. / 2. * (u_device_pixel_ratio * .5 + 1.);
+                    vec2 st = gl_FragCoord.xy / wave_scale;
+                    
+                    float meter_pixels = u_meters_per_pixel / u_device_pixel_ratio;
+                    st += u_map_position.xy / meter_pixels / wave_scale;
+                    
+                    const float wave_width = 30.;
+                    const float wave_height = .01;
+                    st.y += sin(st.x * wave_width) * wave_height;
+                    
+                    color = mix(color,vec4(1.0,1.0,1.0,1.0),stripes(st*70.))*1.0;
+
+sources:
+    osm:
+        type: TopoJSON
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
+layers:
+    water:
+        data: { source: osm, layer: water }
+        draw:
+            waves:
+                color: [0.650,0.650,0.650]
+
+        water_boundaries-not-ocean:
+            filter: { boundary: yes, not: { kind: ocean }, $zoom: { min: 9 } }
+            draw:
+                waves:
+                    color: [0.750,0.750,0.750]
+
+    earth:
+        data: { source: osm }
+        draw:
+            polygons:
+                order: 0
+                color: [1.0,1.0,1.0]

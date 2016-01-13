@@ -1,0 +1,97 @@
+﻿# Author Geraldine Sarmiento, Patricio Gonzalez Vivo
+
+cameras:
+    perspective:
+        type: isometric
+        vanishing_point: [0, -500]
+styles:
+    tools:
+        base: polygons
+        shaders:
+            blocks:
+                global: |
+
+                    // Stripes
+                    //=============================
+                    float stripes(vec2 st,float width){
+                        return step(width,1.0-abs(sin(st.y*3.14159265358)));
+                    }
+
+    buildings:
+        base: polygons
+        mix: tools
+        texcoords: true
+        shaders:
+            blocks:
+                color: |
+                    vec2 st = v_texcoord.xy;
+                    color.rgb += vec3(min((v_world_position.z*.001 + 1.0),3.));
+                    color.rgb = mix(color.rgb,vec3(0.00,0.00,0.00),stripes(st*16.,st.y*0.7) );
+                    
+                    if ( dot(vec3(0.,0.,1.),normal) == 1.0 ) {
+                        // If it's a roof
+                        color.rgb = vec3(0.990);
+                    }
+                    
+sources:
+    osm:
+        type: TopoJSON
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?
+
+scene:
+    background:
+        color: [1.000, 1.000, 1.000]
+
+layers:
+    water:
+        data: { source: osm, layer: water }
+        draw:
+            polygons:
+                order: 1
+                color: [1.000, 1.000, 1.000]
+        water-boundary-ocean-early:
+            filter: { boundary: yes, kind: ocean, $zoom: {min: 1} }
+            draw:
+                lines:
+                    order: 10
+                    color: [0.312, 0.312, 0.312]
+                    width: 1px
+        water_boundaries-not-ocean:
+            filter: { boundary: yes, not: { kind: ocean }, $zoom: { min: 9 } }
+            draw:
+                lines:
+                    order: 30
+                    color: [0.312, 0.312, 0.312]
+                    width: 1px
+            early:
+                filter: { $zoom: { min: 16 } }
+                draw:
+                    lines: { order: 19 }
+            riverbank:
+                # river boundaries like the thames in london, la seine in paris
+                filter: { kind: riverbank }
+                draw:
+                    lines:
+                        color: [0.312, 0.312, 0.312]
+                        width: 1px
+
+    earth:
+        data: { source: osm }
+        draw:
+            polygons:
+                order: 0
+                color: [0.000, 0.000, 0.000]
+
+    buildings:
+        data: { source: osm }
+        filter: { $zoom: { min: 13 } }
+        draw:
+            polygons:
+                order: 4
+                color: [0.900,0.900,0.900]
+        extruded:
+            filter: { $zoom: { min: 13 } }
+            draw:
+                polygons:
+                    style: buildings
+                    extrude: function () { return feature.height > 0 || $zoom >= 16; }
