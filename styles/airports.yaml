@@ -63,7 +63,7 @@ layers:
                         order: 10
                         color: [0.0,0.0,0.0]
                         cap: butt
-                        width: [[10, 2px], [13, 4px], [14, 8px], [15, 16px], [16, 32px], [17, 60m]]
+                        width: [[9, 1.25px], [10, 2px], [13, 4px], [14, 8px], [15, 16px], [16, 32px], [17, 60m]]
                         outline:
                             color: [1.0,1.0,1.0]
                 early:
