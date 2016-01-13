@@ -41,6 +41,11 @@ sources:
     osm:
         type: TopoJSONTiles
         url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
+
+scene:
+    background:
+        color: [1.000, 1.000, 1.000]
+
 layers:
     earth:
         data: { source: osm }

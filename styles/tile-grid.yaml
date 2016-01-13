@@ -1,0 +1,81 @@
+﻿# Author: Geraldine Sarmiento, Patricio Gonzalez Vivo
+
+cameras:
+    perspective:
+        type: flat
+        vanishing_point: [0, -500]
+
+styles:
+    tools-tilecoords:
+        shaders:
+            blocks:
+                global: |
+                    // Varying to be added to both vertex and fragment shaders
+                    varying vec2 v_pos;
+                    #ifdef TANGRAM_FRAGMENT_SHADER
+                    vec2 TileCoords() {
+                        return fract(v_pos);
+                    }
+                    #endif
+                position: |
+                    v_pos = modelPosition().xy;
+    tools-grid:
+        mix: tools-tilecoords
+        shaders:
+            blocks:
+                global: |
+                    #ifdef TANGRAM_FRAGMENT_SHADER
+                    bool grid(vec2 st, float res, float press) {
+                        vec2 grid = fract(st * res);
+                        return (grid.x < res * press) || (grid.y < res * press);
+                    }
+                    float TileGrid(float res) {
+                        vec2 st = TileCoords() * 100. * res;
+                        float pct = 0.0;
+                        float press = 0.4 + (1.0 - fract(u_map_position.z)) * 0.1;
+                        if (grid(st, 0.01, press)) { pct += 0.5; }
+                        if (grid(st, 0.1, press)) { pct += 0.1; }
+                        return pct;
+                    }
+                    float TileGrid() {
+                        return mix(TileGrid(1.), TileGrid(2.), fract(u_map_position.z));
+                    }
+                    #endif
+
+    grid:
+        base: polygons
+        mix: [tools-grain, tools-grid]
+        shaders:
+            blocks:
+                filter: |
+                    color.rgb = vec3(1.0,1.0,1.0);
+                    color.rgb = mix(color.rgb, vec3(0.0, 0.0, 0.0), TileGrid());
+
+sources:
+    osm:
+        type: TopoJSON
+        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
+
+scene:
+    background:
+        color: [1.000, 1.000, 1.000]
+
+layers:
+    water:
+        data: { source: osm, layer: water }
+        draw:
+            grid:
+                color: [0.0,0.0,0.0]
+        water-boundary-ocean-early:
+            filter: { boundary: yes, kind: ocean, $zoom: {min: 1, max: 17} }
+            draw:
+                lines:
+                    order: 10
+                    color: [0.612, 0.612, 0.612]
+                    width: 1px
+    earth:
+        data: { source: osm }
+        draw:
+            polygons:
+                order: 0
+                color: [1.0,1.0,1.0]
