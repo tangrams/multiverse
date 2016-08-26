@@ -2,11 +2,11 @@
 
 sources:
     # osm:
-    #     type: TopoJSONTiles
+    #     type: TopoJSON
     #     url: //tilestache-dev2-us-east-ext-1189213459.us-east-1.elb.amazonaws.com/osm/all/{z}/{x}/{y}.topojson
 
     osm:
-        type: TopoJSONTiles
+        type: TopoJSON
         url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-HqUVidw
 
 camera:
