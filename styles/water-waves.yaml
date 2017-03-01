@@ -38,7 +38,7 @@ styles:
 sources:
     osm:
         type: TopoJSON
-        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
+        url:  https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
 
 scene:
     background:
@@ -52,7 +52,7 @@ layers:
                 color: [0.650,0.650,0.650]
 
         water_boundaries-not-ocean:
-            filter: { boundary: yes, not: { kind: ocean }, $zoom: { min: 9 } }
+            filter: { boundary: true, not: { kind: ocean }, $zoom: { min: 9 } }
             draw:
                 waves:
                     color: [0.750,0.750,0.750]

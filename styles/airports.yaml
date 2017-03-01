@@ -3,7 +3,7 @@
 sources:
     osm:
         type: TopoJSON
-        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
+        url:  https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
 
 scene:
     background:
@@ -17,14 +17,14 @@ layers:
                 order: 0
                 color: [1.000, 1.000, 1.000]
         water-boundary-ocean-early:
-            filter: { boundary: yes, kind: ocean, $zoom: {min: 1} }
+            filter: { boundary: true, kind: ocean, $zoom: {min: 1} }
             draw:
                 lines:
                     order: 10
                     color: [0.612, 0.612, 0.612]
                     width: 1px
         water_boundaries-not-ocean:
-            filter: { boundary: yes, not: { kind: ocean }, $zoom: { min: 9 } }
+            filter: { boundary: true, not: { kind: ocean }, $zoom: { min: 9 } }
             draw:
                 lines:
                     order: 30
@@ -57,7 +57,7 @@ layers:
                 #color: black
                 width: 1px
         airport-lines:
-                filter: { kind: minor_road, aeroway: [runway,taxiway] }
+                filter: { kind_detail: [runway,taxiway] }
                 draw:
                     lines:
                         order: 10
@@ -77,7 +77,7 @@ layers:
                         lines:
                             cap: butt
                 taxiway:
-                    filter: { aeroway: taxiway }
+                    filter: { kind_detail: taxiway }
                     draw:
                         lines:
                             order: 9
