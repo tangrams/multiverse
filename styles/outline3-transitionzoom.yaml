@@ -353,7 +353,9 @@ sources:
         type: TopoJSON
         #url: '//tileserver-dev-us-east-ext-538678355.us-east-1.elb.amazonaws.com/osm/all/{z}/{x}/{y}.topojson'
         #url:  //localhost:8080//osm/all/{z}/{x}/{y}.topojson
-        url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-HqUVidw
+        url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
+        url_params:
+            api_key: vector-tiles-HqUVidw
 
 cameras:
     perspective:
