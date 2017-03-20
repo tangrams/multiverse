@@ -349,7 +349,7 @@ bannana-colors:
 #             zoo: [550, 529, 36, 36]
 
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         #url: '//tileserver-dev-us-east-ext-538678355.us-east-1.elb.amazonaws.com/osm/all/{z}/{x}/{y}.topojson'
         #url:  //localhost:8080//osm/all/{z}/{x}/{y}.topojson
@@ -620,7 +620,7 @@ scene:
 
 layers:
     earth:
-        data: { source: osm, layer: earth }
+        data: { source: mapzen, layer: earth }
         draw:
             polygons:
                 order: 0
@@ -631,7 +631,7 @@ layers:
                 color: [0.000,0.000,0.000]
 
     water:
-        data: { source: osm, layer: water }
+        data: { source: mapzen, layer: water }
         draw:
             water-gradient:
                 order: 5
@@ -663,7 +663,7 @@ layers:
 
 
     roads:
-        data: { source: osm, layer: roads }
+        data: { source: mapzen, layer: roads }
         filter: { not: { kind: rail } }
         draw:
             flatlines:
@@ -1210,7 +1210,7 @@ layers:
                             order: function() { return 6 + feature.sort_key; }
 
     buildings-early:
-        data: { source: osm, layer: buildings }
+        data: { source: mapzen, layer: buildings }
         filter: 
             any:
                 # limit show smaller landuse areas to higher zooms
@@ -1228,7 +1228,7 @@ layers:
 
 
     buildings-late:
-        data: { source: osm, layer: buildings }
+        data: { source: mapzen, layer: buildings }
         filter: { $zoom: { min: 18 } }
         draw:
             polygons:
@@ -1255,7 +1255,7 @@ layers:
 
 
     boundaries:
-        data: { source: osm, layer: boundaries }
+        data: { source: mapzen, layer: boundaries }
         # country subdivisions (states, provinces)
 #        draw:
 #            flatlines:
@@ -1296,7 +1296,7 @@ layers:
 
 
     continent:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, kind: [continent], $zoom: {max: 5} }
         draw:
             text:
@@ -1308,7 +1308,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     administrative-z5-7:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, kind: [state], $zoom: { min: 5, max: 7 } }
         draw:
             text:
@@ -1320,7 +1320,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     administrative-z7-10:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, kind: [state], $zoom: { min: 7, max: 10 } }
         draw:
             text:
@@ -1332,7 +1332,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     populated-places-z6:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: [6] }
         draw:
             text:
@@ -1343,7 +1343,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     populated-places-z7:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: [7] }
         draw:
             text:
@@ -1354,7 +1354,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     populated-places-z8:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: [8,9] }
         draw:
             text:
@@ -1365,7 +1365,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     populated-places-z10:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: [10] }
         draw:
             text:
@@ -1380,7 +1380,7 @@ layers:
             visible: false
 
     populated-places-z11:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: [11] }
         draw:
             text:
@@ -1391,7 +1391,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     populated-places-z12:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: [12] }
         draw:
             text:
@@ -1402,7 +1402,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     populated-places-z13:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: [13] }
         draw:
             text:
@@ -1413,7 +1413,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     populated-places-z14:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: [14] }
         draw:
             text:
@@ -1424,7 +1424,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     populated-places-z15:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: [15] }
         draw:
             text:
@@ -1436,7 +1436,7 @@ layers:
 
 
     landuse_labels:
-        data: { source: osm, layer: landuse_labels }
+        data: { source: mapzen, layer: landuse_labels }
         visible: *label_visible_landuse
         filter: 
             name: true
@@ -1524,7 +1524,7 @@ layers:
 
 
     # poi_icons:
-    #     data: { source: osm, layer: pois }
+    #     data: { source: mapzen, layer: pois }
     #     visible: *label_visible_poi
     #     filter: { kind: [airport, aerodrome, beach, grave_yard, cemetery, golf_course, hospital, park, playground, mall, military_base, museum, observatory, school, kindergarten, stadium, theme_park, miniature_golf, university, college, zoo], $zoom: { min: 16 } }
     #     draw:
@@ -1592,7 +1592,7 @@ layers:
 
 
     landuse:
-        data: { source: osm }
+        data: { source: mapzen }
         filter: 
             any:
                 # limit show smaller landuse areas to higher zooms
@@ -1752,7 +1752,7 @@ layers:
         #             color: *grey1
 
     landuse-not-filtered:
-        data: { source: osm, layer: landuse }
+        data: { source: mapzen, layer: landuse }
         runway:
             filter:
                 kind: runway
@@ -1770,7 +1770,7 @@ layers:
                     color: black
 
     debug:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             flat_lines:
                 width: 2px

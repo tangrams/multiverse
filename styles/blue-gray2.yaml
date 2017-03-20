@@ -2,11 +2,11 @@
 #
 
 sources:
-    # osm:
+    # mapzen:
     #     type: TopoJSON
     #     url: //tilestache-dev2-us-east-ext-1189213459.us-east-1.elb.amazonaws.com/osm/all/{z}/{x}/{y}.topojson
 
-    osm:
+    mapzen:
         type: TopoJSON
         url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
 
@@ -212,7 +212,7 @@ scene:
 
 layers:
     earth:
-        data: { source: osm, layer: earth }
+        data: { source: mapzen, layer: earth }
         draw:
             lines:
                 order: 4
@@ -223,13 +223,13 @@ layers:
                 color: [0.870,0.870,0.870]
 
     water:
-        data: { source: osm, layer: water }
+        data: { source: mapzen, layer: water }
         draw:
             grid:
                 order: 1
 
     landuse:
-        data: { source: osm }
+        data: { source: mapzen }
         park:
             filter:
                 kind: park
@@ -380,7 +380,7 @@ layers:
         #             color: [0.349, 0.349, 0.349]
         
     buildings:
-        data: { source: osm }
+        data: { source: mapzen }
         filter: { $zoom: { min: 14 } }
         draw:
             polygons:

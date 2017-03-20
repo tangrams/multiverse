@@ -165,12 +165,12 @@ styles:
                     float pct = clamp(cross(fract(pos),0.4),0.0,1.0);
                     color.rgb = mix(vec3(1.0),vec3(0.8),pct);
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
 layers:
     earth:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             coast:
                 order: 4
@@ -180,14 +180,14 @@ layers:
                 order: 0
                 color: [1.0,1.0,1.0]
     water:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             color1:
                 order: 1
                 color: [0.8,0.8,0.8]
                 
     landuse:
-        data: { source: osm }
+        data: { source: mapzen }
         park:
             filter:
                 kind: park
@@ -198,7 +198,7 @@ layers:
 
 
     buildings:
-        data: { source: osm }
+        data: { source: mapzen }
         filter: { $zoom: { min: 14 } }
         draw:
             polygons:
@@ -219,7 +219,7 @@ layers:
                     extrude: function () { return feature.height > 0 || $zoom >= 16; }
 
     osm-roads:
-        data: { source: osm, layer: roads }
+        data: { source: mapzen, layer: roads }
         filter: { not: { highway: service, kind: rail }, $zoom: { min: 8 } }
 
         highway:

@@ -107,7 +107,7 @@ settings:
 
 
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         #url: '//tileserver-dev-us-east-ext-538678355.us-east-1.elb.amazonaws.com/osm/all/{z}/{x}/{y}.topojson'
         #url:  //localhost:8080//osm/all/{z}/{x}/{y}.topojson
@@ -393,7 +393,7 @@ scene:
 
 layers:
     earth:
-        data: { source: osm, layer: earth }
+        data: { source: mapzen, layer: earth }
         draw:
             coast:
                 order: 10
@@ -404,13 +404,13 @@ layers:
                 color: [1.0,1.0,1.0]
 
     water-early:
-        data: { source: osm, layer: water }
+        data: { source: mapzen, layer: water }
         draw:
             water-gradient:
                 order: 3
 
     water-fade:
-        data: { source: osm, layer: water }
+        data: { source: mapzen, layer: water }
         filter: { $zoom: { min: 9, max: 13 } }
         draw:
             waves:
@@ -438,7 +438,7 @@ layers:
                     color: *water1
 
     water-late:
-        data: { source: osm, layer: water }
+        data: { source: mapzen, layer: water }
         filter: { $zoom: { min: 13 } }
         draw:
             waves:
@@ -465,7 +465,7 @@ layers:
                     color: *water2
 
     roads:
-        data: { source: osm, layer: roads }
+        data: { source: mapzen, layer: roads }
         filter: { not: { kind: rail } }
         draw:
             lines:
@@ -991,7 +991,7 @@ layers:
                             order: function() { return 6 + feature.sort_key;
 
     boundaries:
-        data: { source: osm, layer: boundaries }
+        data: { source: mapzen, layer: boundaries }
         # country subdivisions (states, provinces)
 #        draw:
 #            lines:
@@ -1023,7 +1023,7 @@ layers:
                     width: [[0, 0.5px], [9, 3.5px], [14, 5.5px], [16, 6.5px], [17, 16m]]
 
     continent:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, kind: [continent], $zoom: {max: 5} }
         draw:
             text:
@@ -1034,7 +1034,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     administrative:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, kind: [state], $zoom: {min: 5} }
         draw:
             text:
@@ -1045,7 +1045,7 @@ layers:
                     stroke: { color: *text_stroke, width: 4 }
 
     populated-places:
-        data: { source: osm, layer: places }
+        data: { source: mapzen, layer: places }
         filter: { name: true, not: { kind: [county, state, island] }, $zoom: {min: 6} }
         draw:
             text:
@@ -1060,7 +1060,7 @@ layers:
 
 
     landuse:
-        data: { source: osm }
+        data: { source: mapzen }
         filter: 
             any:
                 # limit show smaller landuse areas to higher zooms
@@ -1221,7 +1221,7 @@ layers:
         #             color: *grey1
 
     landuse-not-filtered:
-        data: { source: osm, layer: landuse }
+        data: { source: mapzen, layer: landuse }
         runway:
             filter:
                 kind: runway
@@ -1239,7 +1239,7 @@ layers:
                     color: [0.95,0.95,0.95]
 
     buildings-early:
-        data: { source: osm, layer: buildings }
+        data: { source: mapzen, layer: buildings }
         filter: { $zoom: { min: 13, max: 18 } }
         draw:
             polygons:
@@ -1253,7 +1253,7 @@ layers:
                 extrude: false
 
     buildings-late:
-        data: { source: osm, layer: buildings }
+        data: { source: mapzen, layer: buildings }
         filter: { $zoom: { min: 18 } }
         draw:
             polygons:

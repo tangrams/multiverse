@@ -64,18 +64,18 @@ styles:
                     //color.g = 0.2;
                     color.rgb *= .674;
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson?
 layers:
     earth:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             polygons:
                 order: 0
                 color: [0.,0.5,0.8]
     water:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             random_lines:
                 order: 5
@@ -83,7 +83,7 @@ layers:
                 width: 8
                 
     buildings:
-        data: { source: osm }
+        data: { source: mapzen }
         filter: { $zoom: { min: 10 } }
         draw:
             polygons:
@@ -105,7 +105,7 @@ layers:
                     extrude: function () { return feature.height > 0 || $zoom >= 16; }
                     
     osm-roads:
-        data: { source: osm, layer: roads }
+        data: { source: mapzen, layer: roads }
         filter: { not: { highway: service, kind: rail }, $zoom: { min: 6 } }
 
         highway:

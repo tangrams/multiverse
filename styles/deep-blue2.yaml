@@ -207,12 +207,12 @@ styles:
                     }
 
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson?
 layers:
     earth:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             lines:
                 order: 4
@@ -222,13 +222,13 @@ layers:
                 order: 0
                 # color: [0.4,0.4,0.4]
     water:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             wave:
                 order: 1
                 # color: [0.159,0.159,0.159]
     landuse:
-        data: { source: osm }
+        data: { source: mapzen }
         park:
             filter:
                 kind: park
@@ -246,7 +246,7 @@ layers:
                     # color: white
 
     buildings:
-        data: { source: osm }
+        data: { source: mapzen }
         filter: { $zoom: { min: 14 } }
         draw:
             polygons:
@@ -260,7 +260,7 @@ layers:
                     extrude: function () { return feature.height > 0 || $zoom >= 16; }
 
     osm-roads:
-        data: { source: osm, layer: roads }
+        data: { source: mapzen, layer: roads }
         filter: { not: { highway: service, kind: rail }, $zoom: { min: 8 } }
 
         highway:

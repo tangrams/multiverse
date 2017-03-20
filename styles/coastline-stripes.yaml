@@ -38,7 +38,7 @@ styles:
                     
                     color = mix(vec4(color.rgb, 0.9), vec4(0.), stripes(st*130.))*.8; // transparent stripes
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-P6dkVl4
 
@@ -48,7 +48,7 @@ scene:
 
 layers:
     earth:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             coast:
                 order: 4
@@ -58,7 +58,7 @@ layers:
                 order: 0
                 color: [1.0,1.0,1.0]
     water:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             polygons:
                 order: 1
