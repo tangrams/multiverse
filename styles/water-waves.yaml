@@ -36,7 +36,7 @@ styles:
                     color = mix(color,vec4(1.0,1.0,1.0,1.0),stripes(st*70.))*1.0;
 
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
         url_params:
@@ -48,7 +48,7 @@ scene:
 
 layers:
     water:
-        data: { source: osm, layer: water }
+        data: { source: mapzen, layer: water }
         draw:
             waves:
                 color: [0.650,0.650,0.650]
@@ -60,7 +60,7 @@ layers:
                     color: [0.750,0.750,0.750]
 
     earth:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             polygons:
                 order: 0

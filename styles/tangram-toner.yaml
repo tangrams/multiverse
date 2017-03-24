@@ -2,11 +2,11 @@
 #
 
 sources:
-    # osm:
+    # mapzen:
     #     type: TopoJSON
     #     url: //tilestache-dev2-us-east-ext-1189213459.us-east-1.elb.amazonaws.com/osm/all/{z}/{x}/{y}.topojson
 
-    osm:
+    mapzen:
         type: TopoJSON
         url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
         url_params:
@@ -196,7 +196,7 @@ scene:
 
 layers:
     earth:
-        data: { source: osm, layer: earth }
+        data: { source: mapzen, layer: earth }
         draw:
             lines:
                 order: 4
@@ -207,14 +207,14 @@ layers:
                 color: [1.0,1.0,1.0]
 
     water:
-        data: { source: osm, layer: water }
+        data: { source: mapzen, layer: water }
         draw:
             grid:
                 order: 1
                 color: [0.8,0.8,0.8]
 
     landuse:
-        data: { source: osm }
+        data: { source: mapzen }
         park:
             filter:
                 kind: park
@@ -240,7 +240,7 @@ layers:
                     color: [0.988,0.636,0.591]
 
     osm-roads:
-        data: { source: osm, layer: roads }
+        data: { source: mapzen, layer: roads }
         filter: { not: { highway: service, kind: rail }, $zoom: { min: 8 } }
 
         highway:
@@ -280,7 +280,7 @@ layers:
                     width: [[13, 0.2px], [14, 0.4px], [15, 1px], [16, 2px]]
 
     places:
-        data: { source: osm }
+        data: { source: mapzen }
 
         ocean_labels:
             filter: 

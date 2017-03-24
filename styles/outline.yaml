@@ -121,12 +121,12 @@ styles:
                     color *= vec4(b);
 
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
 layers:
     earth:
-        data: { source: osm, layer: earth }
+        data: { source: mapzen, layer: earth }
         draw:
             lines:
                 order: 4
@@ -136,20 +136,20 @@ layers:
                 order: 0
                 color: [1.0,1.0,1.0]
     water:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             gradient1:
                 order: 1
                 # color: [0.159,0.159,0.159]
     landuse:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             dots:
                 order: 1
                 color: [0.000,0.000,0.000]
 
     buildings:
-        data: { source: osm }
+        data: { source: mapzen }
         filter: { $zoom: { min: 10 } }
         draw:
             polygons:
@@ -180,7 +180,7 @@ layers:
                         # width: .5px
 
     osm-roads:
-        data: { source: osm, layer: roads }
+        data: { source: mapzen, layer: roads }
         filter: { not: { highway: service, kind: rail }, $zoom: { min: 8 } }
 
         highway:

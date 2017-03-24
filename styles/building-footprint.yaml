@@ -1,6 +1,6 @@
 ﻿# Author: Geraldine Sarmiento
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
         url_params:
@@ -17,7 +17,7 @@ scene:
 
 layers:
     water:
-        data: { source: osm, layer: water }
+        data: { source: mapzen, layer: water }
         draw:
             polygons:
                 order: 0
@@ -49,14 +49,14 @@ layers:
                         width: 1px
 
     earth:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             polygons:
                 order: 0
                 color: [1.0,1.0,1.0]
 
     buildings-early:
-        data: { source: osm, layer: buildings }
+        data: { source: mapzen, layer: buildings }
         filter: { $zoom: { min: 13, max: 16 } }
         draw:
             polygons:
@@ -70,7 +70,7 @@ layers:
                 extrude: false
 
     buildings-late:
-        data: { source: osm, layer: buildings }
+        data: { source: mapzen, layer: buildings }
         filter: { $zoom: { min: 15 } }
         draw:
             polygons:

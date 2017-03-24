@@ -52,7 +52,7 @@ styles:
                     color.rgb = mix(color.rgb, vec3(0.0, 0.0, 0.0), TileGrid());
 
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
         url_params:
@@ -64,7 +64,7 @@ scene:
 
 layers:
     water:
-        data: { source: osm, layer: water }
+        data: { source: mapzen, layer: water }
         draw:
             grid:
                 color: [0.0,0.0,0.0]
@@ -76,7 +76,7 @@ layers:
                     color: [0.612, 0.612, 0.612]
                     width: 1px
     earth:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             polygons:
                 order: 0

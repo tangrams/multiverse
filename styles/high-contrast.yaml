@@ -269,20 +269,20 @@ styles:
                     }
 
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
         url_params:
             api_key: vector-tiles-P6dkVl4
 layers:
     earth:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             ground:
                 order: 1
                 color: [0.925, 0.925, 0.925]
     water:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             stripes:
                 order: 4
@@ -293,7 +293,7 @@ layers:
                 color: [1.0,1.0,1.0]
 
     buildings:
-        data: { source: osm }
+        data: { source: mapzen }
         filter: { $zoom: { min: 10 } }
         draw:
             outline:
@@ -306,7 +306,7 @@ layers:
                 color: [0.952, 0.952, 0.952]
 
     landuse:
-        data: { source: osm }
+        data: { source: mapzen }
         filter: 
             any:
                 # limit show smaller landuse areas to higher zooms
@@ -377,7 +377,7 @@ layers:
                     color: [0.0,0.0,0.0]
 
     roads:
-        data: { source: osm }
+        data: { source: mapzen }
         properties: { width: 3 }
         draw:
             lines:
@@ -386,7 +386,7 @@ layers:
                 width: 5
 
     # landuse:
-    #     data: { source: osm }
+    #     data: { source: mapzen }
     #     draw:
     #         polygons:
     #             order: 1

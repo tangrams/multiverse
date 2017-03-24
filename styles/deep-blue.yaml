@@ -200,14 +200,14 @@ styles:
                     color.rgb -= grain(gl_FragCoord.xy)*0.1;
 
 sources:
-    osm:
+    mapzen:
         type: TopoJSON
         url:  //tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson?
         url_params:
             api_key: vector-tiles-x4i7gmA
 layers:
     earth:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             lines:
                 order: 4
@@ -217,13 +217,13 @@ layers:
                 order: 0
                 # color: [0.4,0.4,0.4]
     water:
-        data: { source: osm }
+        data: { source: mapzen }
         draw:
             gradient1:
                 order: 1
                 # color: [0.159,0.159,0.159]
     landuse:
-        data: { source: osm }
+        data: { source: mapzen }
         park:
             filter:
                 kind: park
@@ -243,7 +243,7 @@ layers:
                     # color: white
 
     osm-roads:
-        data: { source: osm, layer: roads }
+        data: { source: mapzen, layer: roads }
         filter: { not: { highway: service, kind: rail }, $zoom: { min: 8 } }
 
         highway:
